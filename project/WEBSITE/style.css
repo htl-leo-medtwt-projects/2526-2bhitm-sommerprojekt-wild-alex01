@@ -1,0 +1,64 @@
+@import url('https://fonts.googleapis.com/css2?family=Jacquard+24&display=swap');
+
+body {
+    padding: 0;
+    margin: 0;
+    background-image: url('./img/startMenu.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-color: black;
+    color: white;
+    font-family: 'Jacquard 24';
+    animation: fadeIn 0.5s ease-in-out;
+    opacity: 1;
+}
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+.jacquard-24-regular {
+  font-family: "Jacquard 24", system-ui;
+  font-weight: 400;
+  font-style: normal;
+}
+h1 {
+    font-size: 8rem;
+    text-align: center;
+    margin-top: 16rem;
+    color: #eaeffd;
+  letter-spacing:3px;
+
+  text-shadow:
+    0 0 5px #6f86de,
+    0 0 10px #6f86de,
+    0 0 20px #54649c,
+    0 0 40px #6176bf;
+
+  animation: glowPulse 3s ease-in-out infinite;
+}
+
+@keyframes glow {
+     0%,100%{
+    text-shadow:
+      0 0 5px #6f86de,
+      0 0 10px #6f86de,
+      0 0 20px #54649c,
+      0 0 40px #6176bf;
+  }
+
+  50%{
+    text-shadow:
+      0 0 10px #9a7dff,
+      0 0 20px #7a5cff,
+      0 0 40px #5a3dff,
+      0 0 80px #3b1fff;
+  }
+}
