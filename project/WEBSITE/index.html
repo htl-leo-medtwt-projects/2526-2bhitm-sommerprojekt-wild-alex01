@@ -6,8 +6,28 @@
     <title>Dark Adventures</title>
     <link rel="stylesheet" href="./style.css">
     <script src="./script.js" defer></script>
+    <script src="./items.js" defer></script>
 </head>
 <body>
-    <h1>Dark Adventures</h1>
+    <div id="overlay" onclick="gotoMainMenu()"></div>
+    </div>
+    <h1 id="headerText" onclick="gotoMainMenu()">Dark Adventures</h1>
+    <section id="MainMenu" style="display: none;">
+        <p onclick="loadGame()">Load Game</p>
+        <p>Leaderboard</p>
+        <p>About</p>
+    </section>
+    <section id="loadGame">
+        <div id="loadBox">
+            <p class="start-btn" onclick="startGame()"> ▶ START</p>
+            <p>Neuer Spielstand</p>
+        </div>
+    </section>
+
+    <section id="game">
+        <div id="inventoryUI">
+
+        </div>
+    </section>
 </body>
 </html>

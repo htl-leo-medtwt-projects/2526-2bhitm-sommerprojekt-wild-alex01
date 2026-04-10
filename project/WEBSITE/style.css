@@ -15,6 +15,20 @@ body {
     opacity: 1;
 }
 
+#overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease;
+    z-index: -1;
+}
+
+#overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
 @keyframes fadeIn {
     0% {
         opacity: 0;
@@ -61,4 +75,184 @@ h1 {
       0 0 40px #5a3dff,
       0 0 80px #3b1fff;
   }
+}
+
+#MainMenu {
+    justify-content: center;
+    flex-direction: column;
+    margin-left: 20%;
+    top: 12.5%;
+    font-size: 5.5rem;
+}
+
+#MainMenu p {
+    width: fit-content;
+    transition: 0.2s ease-in-out;
+    text-shadow: 5px 10px 20px white;
+    z-index: 10;
+}
+
+#MainMenu p:hover {
+  transform: scale(1.03);
+  cursor: pointer;
+}
+
+#loadGame {
+    display: none;
+    flex-direction: column;
+    text-align: center;
+    justify-content: center;
+    align-content: center;
+  font-size: 2rem;
+}
+
+#loadGame div {
+    height: 7.5rem;
+}
+
+#loadBox {
+  margin: 15rem auto auto auto;
+  display: none;
+  justify-content: center;
+  display: none;
+  align-items: center;
+  background: rgba(255,255,255,0.35);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.5);
+  border-radius: 12px;
+  width: 60%;
+  box-shadow: 0 8px 32px rgba(255,255,255,0.5);
+}
+
+.loadBox {
+  margin: 2rem auto;
+  display: none;
+  justify-content: center;
+  display: none;
+  align-items: center;
+  background: rgba(255,255,255,0.35);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.5);
+  border-radius: 12px;
+  width: 60%;
+  box-shadow: 0 8px 32px rgba(255,255,255,0.5);
+}
+
+#inventoryUI {
+    display: grid;
+    grid-template-columns: repeat(4, 80px);
+    gap: 10px;
+    padding: 10px;
+}
+
+.invItem {
+    width: 80px;
+    height: 80px;
+    background: #222;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.invItem:hover {
+    background: #333;
+}
+
+#loadBox2 {
+    display: none;
+}
+
+/* Labels sind KI generiert da ich eine Design Idee brauchte*/
+
+.label {
+  font-size: 2.5rem;
+  color: #eaeffd;
+  letter-spacing: 2px;
+  text-shadow:
+    0 0 5px #6f86de,
+    0 0 10px #54649c,
+    0 0 20px #6176bf;
+  margin: 1rem;
+  transition: 0.3s ease-in-out;
+}
+
+.label:hover {
+  transform: scale(1.05);
+  text-shadow:
+    0 0 10px #9a7dff,
+    0 0 20px #7a5cff,
+    0 0 40px #3b1fff;
+}
+
+.level::before {
+  content: "⚔ LEVEL: ";
+  color: #9bb0ff;
+}
+
+.money::before {
+  content: "$";
+  color: #ffd36e;
+}
+
+.start-btn {
+  font-family: 'Jacquard 24', system-ui;
+  font-size: 3rem;
+  letter-spacing: 4px;
+
+  color: #eaeffd;
+  background: rgba(10, 10, 20, 0.6);
+
+  padding: 0.5rem 1.5rem;
+  border: 2px solid rgba(120, 140, 255, 0.5);
+  border-radius: 10px;
+
+  cursor: pointer;
+
+  backdrop-filter: blur(12px);
+
+  text-shadow:
+    0 0 5px #6f86de,
+    0 0 15px #54649c;
+
+  box-shadow:
+    0 0 10px rgba(90, 120, 255, 0.3),
+    inset 0 0 10px rgba(255,255,255,0.1);
+
+  transition: all 0.3s ease-in-out;
+
+  position: absolute;
+  left: 5%;
+  overflow: hidden;
+}
+
+.start-btn:hover {
+  transform: scale(1.08);
+  border-color: #9a7dff;
+  box-shadow:
+    0 0 20px rgba(120, 90, 255, 0.7),
+    0 0 60px rgba(90, 60, 255, 0.4);
+}
+
+.start-btn::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    120deg,
+    transparent,
+    rgba(255,255,255,0.2),
+    transparent
+  );
+  transition: 0.5s;
+}
+
+.start-btn:hover::before {
+  left: 100%;
 }
