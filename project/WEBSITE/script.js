@@ -1,7 +1,19 @@
 // VARS
 const KEY = 'ADVENTURE_GAME_LSKEY'
 let gameSave = null
+const images = [
+    "./img/castle_loading_screeen.png",
+    "./img/dark_knight.png",
+    "./img/startMenu.png"
+];
 
+const tips = [
+    "Nutze Items strategisch!",
+    "Speichere regelmäßig dein Spiel.",
+    "Manche Gegner haben Schwächen.",
+    "Erkunde jede Ecke!",
+    "Only you can prevent V-Bucks scams"
+];
 
 
 
@@ -12,18 +24,18 @@ let gameSave = null
 function loadScore() {
     let save = localStorage.getItem(KEY)
 
-    if(save) {
+    if (save) {
         return JSON.parse(save)
-    } 
-        let newSave = {
-            level: 1,
-            money: 100,
-            leben: 3,
-            inventory: []
-        }
+    }
+    let newSave = {
+        level: 1,
+        money: 100,
+        leben: 3,
+        inventory: []
+    }
 
-        localStorage.setItem(KEY, JSON.stringify(newSave))
-        return newSave
+    localStorage.setItem(KEY, JSON.stringify(newSave))
+    return newSave
 }
 
 
@@ -32,7 +44,7 @@ function checkGame() {
 }
 
 function saveGame() {
-    if(!gameSave) {
+    if (!gameSave) {
         console.log("Fehler kein Speicher!")
     }
     localStorage.setItem(KEY, JSON.stringify(gameSave))
@@ -44,13 +56,13 @@ function gotoMainMenu() {
     document.getElementById("headerText").style.display = "none"
     document.getElementById("MainMenu").style.display = "flex"
     document.getElementById("loadGame").style.display = "none"
-    document.getElementById("overlay").classList.add("active") 
+    document.getElementById("overlay").classList.add("active")
 }
 
 function loadGame() {
     document.getElementById("MainMenu").style.display = "none"
     document.getElementById("loadGame").style.display = "flex"
-    if(checkGame()) {    
+    if (checkGame()) {
         gameSave = loadScore()
         console.log(gameSave)
         document.getElementById("loadGame").innerHTML += `
@@ -122,50 +134,76 @@ function renderInventory() {
     }
 }
 function startGame() {
-    
+    startLoadingScreen(0.5)
+    document.getElementById("game").style.display = "block"
+
+}
+function startLoadingScreen(speed) {
+    const screen = document.getElementById("loadingScreen");
+    const tipEl = document.getElementById("tip");
+    const progress = document.getElementById("progress");
+
+    screen.style.display = "block";
+    document.body.classList.add("loading");
+
+    let progressValue = 0;
+    let tipIndex = 0;
+
+    progress.style.width = "0%";
+let currentBG = 1;
+
+function updateBG() {
+    const bg1 = document.querySelector(".bg1");
+    const bg2 = document.querySelector(".bg2");
+
+    const nextImg = images[Math.floor(Math.random() * images.length)];
+
+    if (currentBG === 1) {
+        bg2.style.backgroundImage = `url(${nextImg})`;
+
+        bg2.classList.add("active");
+        bg1.classList.remove("active");
+
+        currentBG = 2;
+    } else {
+        bg1.style.backgroundImage = `url(${nextImg})`;
+
+        bg1.classList.add("active");
+        bg2.classList.remove("active");
+
+        currentBG = 1;
+    }
 }
 
-// KI generiert und noch nicht ausgeweiter
-/*
-function craft(itemId) {
-    const recipe = recipes[itemId];
-    if (!recipe) return console.log("Kein Rezept!");
+    function updateTip() {
+        tipEl.classList.remove("show");
 
-    // check materials
-    for (const req in recipe.requires) {
-        if (!hasItem(req, recipe.requires[req])) {
-            return console.log("Nicht genug Materialien!");
+        setTimeout(() => {
+            tipEl.textContent = tips[tipIndex];
+            tipEl.classList.add("show");
+            tipIndex = (tipIndex + 1) % tips.length;
+        }, 200);
+    }
+
+    updateBG();
+    updateTip();
+
+    const interval = setInterval(() => {
+        progressValue += speed || 1;
+
+        if (progressValue % 30 === 0) updateBG();
+        if (progressValue % 40 === 0) updateTip();
+
+        progress.style.width = progressValue + "%";
+
+        if (progressValue >= 100) {
+            clearInterval(interval);
+
+            setTimeout(() => {
+                screen.style.display = "none";
+                document.body.classList.remove("loading");
+            }, 500);
         }
-    }
 
-    // remove materials
-    for (const req in recipe.requires) {
-        removeItem(req, recipe.requires[req]);
-    }
-
-    // give item
-    addItem(recipe.result, 1);
-
-    console.log(`${itemId} gecraftet!`);
+    }, 100);
 }
-
-function renderCrafting() {
-    const container = document.getElementById("craftingUI");
-    container.innerHTML = "";
-
-    for (const recipeId in recipes) {
-        const recipe = recipes[recipeId];
-
-        const div = document.createElement("div");
-        div.className = "invItem";
-
-        div.innerHTML = `
-            <strong>${recipeId}</strong>
-            <small>Craft</small>
-        `;
-
-        div.onclick = () => craft(recipeId);
-
-        container.appendChild(div);
-    }
-} */

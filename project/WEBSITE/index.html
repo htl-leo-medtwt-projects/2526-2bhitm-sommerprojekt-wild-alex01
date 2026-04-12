@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,15 +9,35 @@
     <script src="./script.js" defer></script>
     <script src="./items.js" defer></script>
 </head>
+
 <body>
-    <div id="overlay" onclick="gotoMainMenu()"></div>
+
+    <div class="loading-screen" id="loadingScreen">
+        <div class="bg bg1"></div>
+        <div class="bg bg2"></div>
+
+        <div class="overlay"></div>
+
+        <div class="content">
+            <div class="title">Entering the Abyss...</div>
+            <div class="tip" id="tip"></div>
+
+            <div class="progress-container">
+                <div class="progress-bar" id="progress"></div>
+            </div>
+        </div>
     </div>
+
+    <div id="overlay" onclick="gotoMainMenu()"></div>
+
     <h1 id="headerText" onclick="gotoMainMenu()">Dark Adventures</h1>
+
     <section id="MainMenu" style="display: none;">
         <p onclick="loadGame()">Load Game</p>
         <p>Leaderboard</p>
         <p>About</p>
     </section>
+
     <section id="loadGame">
         <div id="loadBox">
             <p class="start-btn" onclick="startGame()"> ▶ START</p>
@@ -25,9 +46,8 @@
     </section>
 
     <section id="game">
-        <div id="inventoryUI">
-
-        </div>
+        <div id="inventoryUI"></div>
     </section>
 </body>
+
 </html>

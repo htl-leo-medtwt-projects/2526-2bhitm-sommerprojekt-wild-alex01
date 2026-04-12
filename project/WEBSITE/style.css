@@ -1,41 +1,43 @@
 @import url('https://fonts.googleapis.com/css2?family=Jacquard+24&display=swap');
 
 body {
-    padding: 0;
-    margin: 0;
-    background-image: url('./img/startMenu.png');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    background-color: black;
-    color: white;
-    font-family: 'Jacquard 24';
-    animation: fadeIn 0.5s ease-in-out;
-    opacity: 1;
+  padding: 0;
+  margin: 0;
+  background-image: url('./img/startMenu.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-color: black;
+  color: white;
+  font-family: 'Jacquard 24';
+  animation: fadeIn 0.5s ease-in-out;
+  opacity: 1;
 }
 
 #overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.5);
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.3s ease;
-    z-index: -1;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease;
+  z-index: -1;
 }
 
 #overlay.active {
-    opacity: 1;
-    visibility: visible;
+  opacity: 1;
+  visibility: visible;
 }
+
 @keyframes fadeIn {
-    0% {
-        opacity: 0;
-    }
-    100% {
-        opacity: 1;
-    }
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
 }
 
 .jacquard-24-regular {
@@ -43,24 +45,27 @@ body {
   font-weight: 400;
   font-style: normal;
 }
+
 h1 {
-    font-size: 8rem;
-    text-align: center;
-    margin-top: 16rem;
-    color: #eaeffd;
-  letter-spacing:3px;
+  font-size: 8rem;
+  text-align: center;
+  margin-top: 16rem;
+  color: #eaeffd;
+  letter-spacing: 3px;
 
   text-shadow:
     0 0 5px #6f86de,
     0 0 10px #6f86de,
     0 0 20px #54649c,
     0 0 40px #6176bf;
-
+  cursor: pointer;
   animation: glowPulse 3s ease-in-out infinite;
 }
 
 @keyframes glow {
-     0%,100%{
+
+  0%,
+  100% {
     text-shadow:
       0 0 5px #6f86de,
       0 0 10px #6f86de,
@@ -68,7 +73,7 @@ h1 {
       0 0 40px #6176bf;
   }
 
-  50%{
+  50% {
     text-shadow:
       0 0 10px #9a7dff,
       0 0 20px #7a5cff,
@@ -78,18 +83,18 @@ h1 {
 }
 
 #MainMenu {
-    justify-content: center;
-    flex-direction: column;
-    margin-left: 20%;
-    top: 12.5%;
-    font-size: 5.5rem;
+  justify-content: center;
+  flex-direction: column;
+  margin-left: 20%;
+  top: 12.5%;
+  font-size: 5.5rem;
 }
 
 #MainMenu p {
-    width: fit-content;
-    transition: 0.2s ease-in-out;
-    text-shadow: 5px 10px 20px white;
-    z-index: 10;
+  width: fit-content;
+  transition: 0.2s ease-in-out;
+  text-shadow: 5px 10px 20px white;
+  z-index: 10;
 }
 
 #MainMenu p:hover {
@@ -98,16 +103,16 @@ h1 {
 }
 
 #loadGame {
-    display: none;
-    flex-direction: column;
-    text-align: center;
-    justify-content: center;
-    align-content: center;
+  display: none;
+  flex-direction: column;
+  text-align: center;
+  justify-content: center;
+  align-content: center;
   font-size: 2rem;
 }
 
 #loadGame div {
-    height: 7.5rem;
+  height: 7.5rem;
 }
 
 #loadBox {
@@ -116,12 +121,12 @@ h1 {
   justify-content: center;
   display: none;
   align-items: center;
-  background: rgba(255,255,255,0.35);
+  background: rgba(255, 255, 255, 0.35);
   backdrop-filter: blur(20px);
-  border: 1px solid rgba(255,255,255,0.5);
+  border: 1px solid rgba(255, 255, 255, 0.5);
   border-radius: 12px;
   width: 60%;
-  box-shadow: 0 8px 32px rgba(255,255,255,0.5);
+  box-shadow: 0 8px 32px rgba(255, 255, 255, 0.5);
 }
 
 .loadBox {
@@ -130,41 +135,41 @@ h1 {
   justify-content: center;
   display: none;
   align-items: center;
-  background: rgba(255,255,255,0.35);
+  background: rgba(255, 255, 255, 0.35);
   backdrop-filter: blur(20px);
-  border: 1px solid rgba(255,255,255,0.5);
+  border: 1px solid rgba(255, 255, 255, 0.5);
   border-radius: 12px;
   width: 60%;
-  box-shadow: 0 8px 32px rgba(255,255,255,0.5);
+  box-shadow: 0 8px 32px rgba(255, 255, 255, 0.5);
 }
 
 #inventoryUI {
-    display: grid;
-    grid-template-columns: repeat(4, 80px);
-    gap: 10px;
-    padding: 10px;
+  display: grid;
+  grid-template-columns: repeat(4, 80px);
+  gap: 10px;
+  padding: 10px;
 }
 
 .invItem {
-    width: 80px;
-    height: 80px;
-    background: #222;
-    color: white;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    border-radius: 8px;
-    font-size: 12px;
-    cursor: pointer;
+  width: 80px;
+  height: 80px;
+  background: #222;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  font-size: 12px;
+  cursor: pointer;
 }
 
 .invItem:hover {
-    background: #333;
+  background: #333;
 }
 
 #loadBox2 {
-    display: none;
+  display: none;
 }
 
 /* Labels sind KI generiert da ich eine Design Idee brauchte*/
@@ -221,7 +226,7 @@ h1 {
 
   box-shadow:
     0 0 10px rgba(90, 120, 255, 0.3),
-    inset 0 0 10px rgba(255,255,255,0.1);
+    inset 0 0 10px rgba(255, 255, 255, 0.1);
 
   transition: all 0.3s ease-in-out;
 
@@ -244,15 +249,101 @@ h1 {
   top: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(
-    120deg,
-    transparent,
-    rgba(255,255,255,0.2),
-    transparent
-  );
+  background: linear-gradient(120deg,
+      transparent,
+      rgba(255, 255, 255, 0.2),
+      transparent);
   transition: 0.5s;
 }
 
 .start-btn:hover::before {
   left: 100%;
+}
+
+.loading-screen {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  display: none;
+  z-index: 99999;
+  background: black;
+}
+
+.bg {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  filter: brightness(0.65) contrast(1.1);
+  transition: opacity 1.5s ease-in-out;
+}
+
+/* beide übereinander */
+.bg1,
+.bg2 {
+  opacity: 0;
+}
+
+/* aktives Bild */
+.bg.active {
+  opacity: 1;
+}
+
+.overlay {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at center, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.9));
+}
+
+.content {
+  position: absolute;
+  bottom: 10%;
+  width: 100%;
+  text-align: center;
+  padding: 0 20px;
+}
+
+.title {
+  font-size: 2.5rem;
+  letter-spacing: 3px;
+  color: #c9b37e;
+  margin-bottom: 20px;
+  text-shadow: 0 0 10px rgba(201, 179, 126, 0.5);
+}
+
+.tip {
+  font-size: 1.2rem;
+  opacity: 0;
+  transition: opacity 1s ease;
+  max-width: 700px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.tip.show {
+  opacity: 1;
+}
+
+.progress-container {
+  width: 60%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  margin: 30px auto 0;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #5a0000, #c9b37e);
+  box-shadow: 0 0 10px rgba(201, 179, 126, 0.6);
+  transition: width 0.2s;
+}
+
+body.loading {
+  overflow: hidden;
 }
