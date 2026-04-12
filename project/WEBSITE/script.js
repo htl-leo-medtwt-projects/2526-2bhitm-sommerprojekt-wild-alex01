@@ -121,7 +121,6 @@ function renderInventory() {
         container.appendChild(div);
     }
 }
-
 function startGame() {
     
 }
