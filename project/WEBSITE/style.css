@@ -172,7 +172,7 @@ h1 {
   display: none;
 }
 
-/* Labels sind KI generiert da ich eine Design Idee brauchte*/
+/* Labels sind KI generiert da ich eine Design Idee brauchte, genauso wie der Startbutton, hab ebenso hilfe genommen um die ::before content dinger zu bekommen*/
 
 .label {
   font-size: 2.5rem;
@@ -280,13 +280,11 @@ h1 {
   transition: opacity 1.5s ease-in-out;
 }
 
-/* beide übereinander */
 .bg1,
 .bg2 {
   opacity: 0;
 }
 
-/* aktives Bild */
 .bg.active {
   opacity: 1;
 }
