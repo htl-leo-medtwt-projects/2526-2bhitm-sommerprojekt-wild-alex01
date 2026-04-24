@@ -27,9 +27,6 @@
             </div>
         </div>
     </div>
-
-    <div id="overlay" onclick="gotoMainMenu()"></div>
-
     <h1 id="headerText" onclick="gotoMainMenu()">Dark Adventures</h1>
 
     <section id="MainMenu" style="display: none;">
@@ -40,8 +37,20 @@
 
     <section id="loadGame">
         <div id="loadBox">
-            <p class="start-btn" onclick="startGame()"> ▶ START</p>
+            <p class="start-btn" onclick="startGame('new')"> ▶ START</p>
             <p>Neuer Spielstand</p>
+        </div>
+    </section>
+
+    <section id="createChar">
+        <h1 class="cc">Create Char</h1>
+        <div id="charBox"></div>
+        <div id="charPreview"></div>
+        <div class="input">
+            <input type="text" id="charNameInput" placeholder="Enter your name...">
+            <div style="margin: 0 auto;">
+            <button class="confirmStart" onclick="confirmChar()">Start Adventure</button>
+            </div>
         </div>
     </section>
 

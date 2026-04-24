@@ -51,6 +51,44 @@ const itemList = {
   }
 };
 
+const chars = {
+  chars: [
+     {
+      name: "Shado",
+      img: './img/nightfighter.png',
+      heal: '20',
+      attack: '100',
+    },
+     {
+      name: "Wizardo",
+      img: './img/wizard.png',
+      heal: '100',
+      attack: '20',
+    },
+    {
+      name: "Oman",
+      img: './img/oman.png',
+      heal: '60',
+      attack: '60',
+
+    },
+    {
+      name: "Sesman",
+      img: './img/Sesman.png',
+      heal: '40',
+      attack: '92',
+
+    },
+    {
+      name: "Aldin",
+      img: './img/aldin.png',
+      heal: '50',
+      attack: '80',
+
+    }
+  ]
+}
+
 const recipes = {
     healPotionBig: {
         requires: {

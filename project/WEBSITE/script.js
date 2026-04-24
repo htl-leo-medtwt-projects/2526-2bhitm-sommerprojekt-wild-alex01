@@ -15,10 +15,11 @@ const tips = [
     "Only you can prevent V-Bucks scams"
 ];
 
+let selectedCharIndex = 0;
+
 
 
 //funcs
-
 //LS Funcs
 
 function loadScore() {
@@ -31,7 +32,9 @@ function loadScore() {
         level: 1,
         money: 100,
         leben: 3,
-        inventory: []
+        inventory: [],
+        selectedChar: null,
+        playerName: ""
     }
 
     localStorage.setItem(KEY, JSON.stringify(newSave))
@@ -56,7 +59,6 @@ function gotoMainMenu() {
     document.getElementById("headerText").style.display = "none"
     document.getElementById("MainMenu").style.display = "flex"
     document.getElementById("loadGame").style.display = "none"
-    document.getElementById("overlay").classList.add("active")
 }
 
 function loadGame() {
@@ -133,11 +135,66 @@ function renderInventory() {
         container.appendChild(div);
     }
 }
-function startGame() {
+
+function startGame(game) {
+    if(game != 'new') {
     startLoadingScreen(0.5)
     document.getElementById("game").style.display = "block"
-
+    document.body.style.backgroundImage = "url('')"
+    return
+    }
+    document.getElementById("createChar").style.display = "block"
+    document.body.style.backgroundImage = "none"
+    document.getElementById("loadGame").style.display = "none"
+    for(let i = 0; i < chars.chars.length; i++) {
+        if(i == 0) {
+        document.getElementById("charBox").innerHTML += `
+        <div class="char selected" onclick="showChar(this, ${i})">
+            <div class="charName">${chars.chars[i].name}</div>
+            <div class="charStats">
+            <p>❤️</p>
+            <div class="statBar">
+                <div class="statFill" style="width: ${chars.chars[i].heal}%"></div>
+            </div>
+      
+            <p>⚔️</p>
+            <div class="statBar">
+            <div class="statFill" style="width: ${chars.chars[i].attack}%"></div>
+            </div>
+    </div>
+        `
+    
+    document.getElementById("charPreview").innerHTML = `<img src="${chars.chars[0].img}">`
+    } else {
+        document.getElementById("charBox").innerHTML += `
+        <div class="char" onclick="showChar(this, ${i})">
+            <div class="charName">${chars.chars[i].name}</div>
+            <div class="charStats">
+            <p>❤️</p>
+            <div class="statBar">
+                <div class="statFill" style="width: ${chars.chars[i].heal}%"></div>
+            </div>
+      
+            <p>⚔️</p>
+            <div class="statBar">
+            <div class="statFill" style="width: ${chars.chars[i].attack}%"></div>
+            </div>
+    </div>
+        `
+    }
+    }
 }
+
+function showChar(elem, index) {
+    let allChars = document.querySelectorAll('#charBox .char');
+    allChars.forEach(c => c.classList.remove("selected"));
+
+    elem.classList.add("selected");
+
+    const preview = document.getElementById("charPreview");
+    preview.innerHTML = `<img src="${chars.chars[index].img}">`;
+}
+
 function startLoadingScreen(speed) {
     const screen = document.getElementById("loadingScreen");
     const tipEl = document.getElementById("tip");
@@ -175,15 +232,15 @@ function updateBG() {
     }
 }
 
-    function updateTip() {
-        tipEl.classList.remove("show");
+function updateTip() {
+    tipEl.classList.remove("show");
 
-        setTimeout(() => {
-            tipEl.textContent = tips[tipIndex];
-            tipEl.classList.add("show");
-            tipIndex = (tipIndex + 1) % tips.length;
-        }, 200);
-    }
+    setTimeout(() => {
+        tipEl.textContent = tips[tipIndex];
+        tipEl.classList.add("show");
+        tipIndex = (tipIndex + 1) % tips.length;
+    }, 200);
+}
 
     updateBG();
     updateTip();
@@ -206,4 +263,9 @@ function updateBG() {
         }
 
     }, 100);
+}
+
+
+function confirmChar() {
+
 }
