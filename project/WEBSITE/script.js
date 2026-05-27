@@ -32,6 +32,7 @@ function loadScore() {
         level: 1,
         money: 100,
         leben: 3,
+        attack: 1,
         inventory: [],
         selectedChar: null,
         playerName: ""
@@ -56,6 +57,7 @@ function saveGame() {
 
 
 function gotoMainMenu() {
+    document.getElementById("overlay").style.display = "block"
     document.getElementById("headerText").style.display = "none"
     document.getElementById("MainMenu").style.display = "flex"
     document.getElementById("loadGame").style.display = "none"
@@ -186,6 +188,7 @@ function startGame(game) {
 }
 
 function showChar(elem, index) {
+    selectedCharIndex = index
     let allChars = document.querySelectorAll('#charBox .char');
     allChars.forEach(c => c.classList.remove("selected"));
 
@@ -267,5 +270,18 @@ function updateTip() {
 
 
 function confirmChar() {
+    let selectedChar = chars.chars[selectedCharIndex]
+    let char = {
+        name: document.getElementById("charNameInput"),
+        level: 1,
+        money: 100,
+        leben: selectedChar.heal,
+        attack: selectedChar.attack,
+        inventory: [],
+        selectedChar: null,
+        playerName: ""
+    }
 
+    localStorage.setItem(KEY, JSON.stringify(char))
+    startLoadingScreen()
 }
