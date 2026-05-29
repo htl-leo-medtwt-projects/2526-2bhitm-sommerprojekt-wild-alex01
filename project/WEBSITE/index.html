@@ -11,7 +11,7 @@
 </head>
 
 <body>
-        <div id="overlay"></div>
+    <div id="overlay"></div>
 
     <div class="loading-screen" id="loadingScreen">
         <div class="bg bg1"></div>
@@ -32,8 +32,8 @@
 
     <section id="MainMenu" style="display: none;">
         <p onclick="loadGame()">Load Game</p>
-        <p>Leaderboard</p>
-        <p>About</p>
+        <p onclick="showLeaderBoard()">Leaderboard</p>
+        <a href="./unterseiten/about.html">About</a>
     </section>
 
     <section id="loadGame">
@@ -50,12 +50,33 @@
         <div class="input">
             <input type="text" id="charNameInput" placeholder="Enter your name...">
             <div style="margin: 0 auto;">
-            <button class="confirmStart" onclick="confirmChar()">Start Adventure</button>
+                <button class="confirmStart" onclick="confirmChar()">Start Adventure</button>
             </div>
         </div>
     </section>
 
+    <section id="leaderboard">
+    <p id="Home" onclick="gotoMainMenu()"><- Home</ü>
+        <div class="lb-wrap">
+            <p id="leaderboardh1">Leaderboard</p>
+            <table class="lb-table">
+                <thead>
+                    <tr>
+                        <th style="width: 44px;">#</th>
+                        <th>Spieler</th>
+                        <th>Level</th>
+                        <th>Geld</th>
+                        <th>N/A</th>
+                    </tr>
+                </thead>
+                <tbody id="lb-body"></tbody>
+            </table>
+        </div>
+    </section>
+
     <section id="game">
+        <div id="g-bg"></div>
+        <img id="playerChar" src="./img/game/player.png">
         <div id="inventoryUI"></div>
     </section>
 </body>
