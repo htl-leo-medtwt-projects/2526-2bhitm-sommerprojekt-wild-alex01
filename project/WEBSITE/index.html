@@ -56,27 +56,33 @@
     </section>
 
     <section id="leaderboard">
-    <p id="Home" onclick="gotoMainMenu()"><- Home</ü>
-        <div class="lb-wrap">
-            <p id="leaderboardh1">Leaderboard</p>
-            <table class="lb-table">
-                <thead>
-                    <tr>
-                        <th style="width: 44px;">#</th>
-                        <th>Spieler</th>
-                        <th>Level</th>
-                        <th>Geld</th>
-                        <th>N/A</th>
-                    </tr>
-                </thead>
-                <tbody id="lb-body"></tbody>
-            </table>
-        </div>
+        <p id="Home" onclick="gotoMainMenu()"><- Home</ü>
+                <div class="lb-wrap">
+                    <p id="leaderboardh1">Leaderboard</p>
+                    <table class="lb-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 44px;">#</th>
+                                <th>Spieler</th>
+                                <th>Level</th>
+                                <th>Geld</th>
+                                <th>N/A</th>
+                            </tr>
+                        </thead>
+                        <tbody id="lb-body"></tbody>
+                    </table>
+                </div>
     </section>
 
     <section id="game">
         <div id="g-bg"></div>
-        <img id="playerChar" src="./img/game/player.png">
+        <div id="ui">
+            <p id="monAnz">Money: </p>
+            <p id="manAnz"></p>
+        </div>
+        <div class="pchar">
+            <img id="playerChar" src="./img/game/player.png">
+        </div>
         <div id="inventoryUI"></div>
     </section>
 </body>

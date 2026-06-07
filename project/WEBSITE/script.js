@@ -5,7 +5,9 @@ let currSlot = null
 const images = [
     "./img/castle_loading_screeen.png",
     "./img/dark_knight.png",
-    "./img/startMenu.png"
+    "./img/startMenu.png",
+    "./img/loading_city.png",
+    "./img/loading_city2.png"
 ];
 
 const tips = [
@@ -17,6 +19,17 @@ const tips = [
 ];
 
 let selectedCharIndex = 0;
+
+const worldMap = [
+    ["./img/game/d_castle.png", "./img/game/traininghall.png", "./img/game/waldhuette.png", "./img/game/g_castle.png"], // Y=0
+    ["./img/game/way_to_schloss.png", "N/A", "N/A", "N/A"],
+    ["./img/game/castle_abzw.png", "./img/game/dorf.png", "./img/game/dorf_2.png", "N/A"],
+]
+
+let gameActive = false
+
+let currentX = 1   // Start bei castle_abzw
+let currentY = 2
 
 const DEBUG_BORDERS = true
 
@@ -160,7 +173,8 @@ function loadGame() {
     document.getElementById("loadBox").style.display = "flex"
 }
 
-function startGameFromSlot(slot) {currSlot = slot
+function startGameFromSlot(slot) {
+    currSlot = slot
     gameSave = JSON.parse(localStorage.getItem(getSlotKey(slot)))
 
     const charData = chars.chars.find(c => c.name === gameSave.selectedChar)
@@ -173,10 +187,11 @@ function startGameFromSlot(slot) {currSlot = slot
     document.body.style.backgroundImage = "url('')"
     setTimeout(() => {
         document.getElementById("game").style.display = "block"
-        setZone(gameSave.zoneX ?? 1, gameSave.zoneY ?? 1)
+        setZone(gameSave.zoneX ?? 0, gameSave.zoneY ?? 2)
         playerX = window.innerWidth / 2
         playerY = window.innerHeight / 2
         moveChar()
+        gameActive = true
     }, (100 / (0.5 || 1)) * 100 + 600)
 }
 
@@ -386,26 +401,27 @@ function confirmChar() {
         inventory: [],
         selectedChar: selectedChar.name,
         playerName: document.getElementById("charNameInput").value,
-        zoneX: 1,
-        zoneY: 1
+        zoneX: 0,
+        zoneY: 2
     }
     currSlot = getNextSlot()
     localStorage.setItem(getSlotKey(currSlot), JSON.stringify(char))
     gameSave = char
 
-    document.getElementById("playerChar").src = selectedChar.img
-
     startLoadingScreen()
 
     setTimeout(() => {
+        document.getElementById("playerChar").src = selectedChar.img  // <- ins setTimeout
         document.getElementById("game").style.display = "block"
-        setZone(1, 1)
+        setZone(0, 2)
         playerX = window.innerWidth / 2
         playerY = window.innerHeight / 2
         moveChar()
+        gameActive = true
     }, (100 / 1) * 100 + 600)
 }
 
+
 /* Game Logik*/
 /* Game Logik*/
 /* Game Logik*/
@@ -413,39 +429,34 @@ function confirmChar() {
 /* Game Logik*/
 /* Game Logik*/
 
-const worldMap = [
-    ["./img/game/d_castle.png", "./img/game/forest.png", "N/A"],
-    ["./img/game/castle_abzw.png","./img/game/dorf.png",  "./img/game/game.png"],
-]
+/* zone borders sind mit ki gemacht */
 
-const zoneBorders = {
-    // castle_abzw (X=1, Y=1) — Häuser links und rechts blockieren
-    "1_1": [
-        { x: 0,   y: 0, w: 120, h: 620 },   // linkes Haus
-        { x: 880, y: 0, w: 120, h: 620 },   // rechtes Haus
-        { x: 0,   y: 620, w: 1000, h: 200 },// Boden unten (Abgrund)
+const zoneBorders = {/*
+    "0_2": [ // castle_abzw
+        { x: 15, y: 0, w: 115, h: 680 },
+        { x: 870, y: 0, w: 115, h: 680 },
+        { x: 0, y: 680, w: 1000, h: 120 },
     ],
-    // dorf (X=2, Y=1) — Häuser links und rechts
-    "2_1": [
-        { x: 0,   y: 0, w: 150, h: 600 },   // linkes Haus
-        { x: 850, y: 0, w: 150, h: 600 },   // rechtes Haus
-        { x: 0,   y: 620, w: 1000, h: 200 },
+    "1_2": [ // dorf
+        { x: 15, y: 0, w: 145, h: 660 },
+        { x: 840, y: 0, w: 145, h: 660 },
+        { x: 0, y: 660, w: 1000, h: 140 },
     ],
-    // g_castle (X=1, Y=2) — Weg zur Burg, Seiten blockiert
-    "1_2": [
-        { x: 0,   y: 0, w: 200, h: 800 },   // linke Seite
-        { x: 800, y: 0, w: 200, h: 800 },   // rechte Seite
-        { x: 0,   y: 620, w: 1000, h: 200 },
+    "0_1": [ // way_to_schloss
+        { x: 0, y: 680, w: 1000, h: 120 },
     ],
-    // d_castle (X=0, Y=1)
-    "0_1": [
-        { x: 0,   y: 620, w: 1000, h: 200 },
+    "0_0": [ // d_castle
+        { x: 0, y: 680, w: 1000, h: 120 },
     ],
-    // forest (X=1, Y=0)
-    "1_0": [
-        { x: 0,   y: 0, w: 1000, h: 50 },   // oberer Rand
-        { x: 0,   y: 620, w: 1000, h: 200 },
+    "1_0": [ // forest
+        { x: 0, y: 0, w: 1000, h: 30 },
+        { x: 0, y: 680, w: 1000, h: 120 },
     ],
+    "2_0": [ // g_castle
+        { x: 15, y: 0, w: 165, h: 700 },
+        { x: 820, y: 0, w: 165, h: 700 },
+        { x: 0, y: 700, w: 1000, h: 100 },
+    ],*/
 }
 
 /*debugdebugdebug kikikiki aup aup aup*/
@@ -492,25 +503,50 @@ function isColliding(x, y) {
         return x < bx + bw && x + charW > bx && y < by + bh && y + charH > by
     })
 }
-
-let currentX = 1
-let currentY = 1
-
 function setZone(x, y) {
     if (y < 0 || y >= worldMap.length) return
     if (x < 0 || x >= worldMap[y].length) return
+    if (worldMap[y][x] === "N/A") return
     currentX = x
     currentY = y
     document.getElementById("g-bg").style.backgroundImage = `url('${worldMap[y][x]}')`
+    if (gameSave) {
+        gameSave.zoneX = currentX
+        gameSave.zoneY = currentY
+        saveGame()
+    }
     drawDebugBorders()
 }
-
 /* check edge ki */
-function checkEdge(playerX, playerY, mapWidth, mapHeight) {
-    if (playerX >= mapWidth - 10)  { setZone(currentX + 1, currentY); return { x: 0, y: playerY } }
-    if (playerX <= 10)             { setZone(currentX - 1, currentY); return { x: mapWidth - 15, y: playerY } }
-    if (playerY <= 10)             { setZone(currentX, currentY - 1); return { x: playerX, y: mapHeight - 15 } }
-    if (playerY >= mapHeight - 10) { setZone(currentX, currentY + 1); return { x: playerX, y: 0 } }
+function checkEdge(px, py, mapWidth, mapHeight) {
+    if (px >= mapWidth - 10) {
+        const nx = currentX + 1
+        const row = worldMap[currentY]
+        if (!row || nx >= row.length || row[nx] === "N/A") return null
+        setZone(nx, currentY)
+        return { x: 20, y: py }
+    }
+    if (px <= 10) {
+        const nx = currentX - 1
+        const row = worldMap[currentY]
+        if (!row || nx < 0 || row[nx] === "N/A") return null
+        setZone(nx, currentY)
+        return { x: mapWidth - 20, y: py }
+    }
+    if (py <= 10) {
+        const ny = currentY - 1
+        const row = worldMap[ny]
+        if (ny < 0 || !row || currentX >= row.length || row[currentX] === "N/A") return null
+        setZone(currentX, ny)
+        return { x: px, y: mapHeight - 20 }
+    }
+    if (py >= mapHeight - 10) {
+        const ny = currentY + 1
+        const row = worldMap[ny]
+        if (ny >= worldMap.length || !row || currentX >= row.length || row[currentX] === "N/A") return null
+        setZone(currentX, ny)
+        return { x: px, y: 20 }
+    }
     return null
 }
 /* keyboard movement ist ki generiert */
@@ -522,30 +558,30 @@ const SPEED = 5
 const keys = {}
 
 document.addEventListener("keydown", (e) => { keys[e.key] = true })
-document.addEventListener("keyup",   (e) => { keys[e.key] = false })
+document.addEventListener("keyup", (e) => { keys[e.key] = false })
 function gameLoop() {
-    if (!gameSave) { requestAnimationFrame(gameLoop); return }
+    if (!gameSave || !gameActive) { requestAnimationFrame(gameLoop); return }
 
     let newX = playerX
     let newY = playerY
 
     if (keys["ArrowRight"] || keys["d"]) newX += SPEED
-    if (keys["ArrowLeft"]  || keys["a"]) newX -= SPEED
-    if (keys["ArrowUp"]    || keys["w"]) newY -= SPEED
-    if (keys["ArrowDown"]  || keys["s"]) newY += SPEED
+    if (keys["ArrowLeft"] || keys["a"]) newX -= SPEED
+    if (keys["ArrowUp"] || keys["w"]) newY -= SPEED
+    if (keys["ArrowDown"] || keys["s"]) newY += SPEED
 
-    const collides = isColliding(newX, newY)
-    console.log(`pos: ${newX.toFixed(0)}, ${newY.toFixed(0)} | collides: ${collides} | zone: ${currentX}_${currentY}`)
-
-    if (!collides) {
-        playerX = newX
-        playerY = newY
-    }
-
-    const edge = checkEdge(playerX, playerY, window.innerWidth, window.innerHeight)
+    const edge = checkEdge(newX, newY, window.innerWidth, window.innerHeight)
     if (edge) {
         playerX = edge.x
         playerY = edge.y
+        moveChar()
+        requestAnimationFrame(gameLoop)
+        return
+    }
+
+    if (!isColliding(newX, newY)) {
+        playerX = newX
+        playerY = newY
     }
 
     moveChar()
@@ -556,7 +592,7 @@ function moveChar() {
     const char = document.getElementById("playerChar")
     if (!char) return
     char.style.left = playerX + "px"
-    char.style.top  = playerY + "px"
+    char.style.top = playerY + "px"
 }
 
 gameLoop()
