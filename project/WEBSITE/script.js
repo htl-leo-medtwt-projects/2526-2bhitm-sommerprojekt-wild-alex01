@@ -21,15 +21,46 @@ const tips = [
 let selectedCharIndex = 0;
 
 const worldMap = [
-    ["./img/game/d_castle.png", "./img/game/traininghall.png", "./img/game/waldhuette.png", "./img/game/g_castle.png"], // Y=0
+    ["N/A", "N/A", "./img/game/waldhuette_inside.jpg", "./img/game/traninghall.png"],
+    ["./img/game/d_castle.png", "./img/game/game.png", "./img/game/waldhuette.png", "./img/game/g_castle.png"], // Y=0
     ["./img/game/way_to_schloss.png", "N/A", "N/A", "N/A"],
     ["./img/game/castle_abzw.png", "./img/game/dorf.png", "./img/game/dorf_2.png", "N/A"],
 ]
 
+const zoneSpawns = {
+    "1_3": { x: 900, y: 500 },
+    "0_3": { x: 900, y: 500 },
+    "2_3": { x: 200, y: 800 },
+    "3_3": { x: 900, y: 500 }
+};
+
+const teleportZones = [
+    {
+        mapX: 1,
+        mapY: 3,
+
+        x: 850,
+        y: 120,
+        w: 100,
+        h: 80,
+
+        targetX: 0,
+        targetY: 1,
+
+        spawnX: 900,
+        spawnY: 850
+    }
+];
+
 let gameActive = false
 
 let currentX = 1   // Start bei castle_abzw
-let currentY = 2
+let currentY = 3
+
+let collisionCanvas = document.createElement("canvas");
+let collisionCtx = collisionCanvas.getContext("2d", { willReadFrequently: true });
+let collisionReady = false;
+let teleportLock = false;
 
 const DEBUG_BORDERS = true
 
@@ -41,11 +72,10 @@ function getSlotKey(slot) {
 }
 
 function getNextSlot() {
-    let i = 1
-    while (localStorage.getItem(getSlotKey(i)) !== null) {
-        i++
+    for (let i = 1; i < 9999; i++) {
+        if (!localStorage.getItem(getSlotKey(i))) return i;
     }
-    return i;
+    return null;
 }
 
 function getAllSlots() {
@@ -69,7 +99,7 @@ function loadScore() {
         money: 100,
         leben: 3,
         attack: 1,
-        inventory: [],
+        inventory: {},
         selectedChar: null,
         playerName: ""
     }
@@ -182,16 +212,24 @@ function startGameFromSlot(slot) {
         document.getElementById("playerChar").src = charData.img
     }
 
-    startLoadingScreen(0.5)
+    startLoadingScreen(2) // geschwindigkeit beim reinladen von einem SPielstand
     document.getElementById("overlay").style.display = "none"
     document.body.style.backgroundImage = "url('')"
     setTimeout(() => {
         document.getElementById("game").style.display = "block"
-        setZone(gameSave.zoneX ?? 0, gameSave.zoneY ?? 2)
-        playerX = window.innerWidth / 2
-        playerY = window.innerHeight / 2
-        moveChar()
-        gameActive = true
+        const zx = Number(gameSave.zoneX);
+        const zy = Number(gameSave.zoneY);
+
+        if (
+            Number.isInteger(zx) &&
+            Number.isInteger(zy) &&
+            worldMap?.[zy]?.[zx] &&
+            worldMap[zy][zx] !== "N/A"
+        ) {
+            setZone(zx, zy);
+        } else {
+            setZone(1, 3);
+        }
     }, (100 / (0.5 || 1)) * 100 + 600)
 }
 
@@ -221,7 +259,7 @@ function removeItem(itemId, amount) {
 }
 
 function hasItem(itemId, amount = 1) {
-    return gameSave.inventory[itemId] >= amount;
+    return (gameSave?.inventory?.[itemId] || 0) >= amount;
 }
 
 
@@ -398,11 +436,11 @@ function confirmChar() {
         money: 100,
         leben: selectedChar.heal,
         attack: selectedChar.attack,
-        inventory: [],
+        inventory: {},
         selectedChar: selectedChar.name,
         playerName: document.getElementById("charNameInput").value,
-        zoneX: 0,
-        zoneY: 2
+        zoneX: 1,
+        zoneY: 3
     }
     currSlot = getNextSlot()
     localStorage.setItem(getSlotKey(currSlot), JSON.stringify(char))
@@ -411,9 +449,9 @@ function confirmChar() {
     startLoadingScreen()
 
     setTimeout(() => {
-        document.getElementById("playerChar").src = selectedChar.img  // <- ins setTimeout
+        document.getElementById("playerChar").src = selectedChar.img  // <- setTimeout
         document.getElementById("game").style.display = "block"
-        setZone(0, 2)
+        setZone(1, 3)
         playerX = window.innerWidth / 2
         playerY = window.innerHeight / 2
         moveChar()
@@ -429,126 +467,132 @@ function confirmChar() {
 /* Game Logik*/
 /* Game Logik*/
 
-/* zone borders sind mit ki gemacht */
+function loadCollisionMap(src) {
+    collisionReady = false;
 
-const zoneBorders = {/*
-    "0_2": [ // castle_abzw
-        { x: 15, y: 0, w: 115, h: 680 },
-        { x: 870, y: 0, w: 115, h: 680 },
-        { x: 0, y: 680, w: 1000, h: 120 },
-    ],
-    "1_2": [ // dorf
-        { x: 15, y: 0, w: 145, h: 660 },
-        { x: 840, y: 0, w: 145, h: 660 },
-        { x: 0, y: 660, w: 1000, h: 140 },
-    ],
-    "0_1": [ // way_to_schloss
-        { x: 0, y: 680, w: 1000, h: 120 },
-    ],
-    "0_0": [ // d_castle
-        { x: 0, y: 680, w: 1000, h: 120 },
-    ],
-    "1_0": [ // forest
-        { x: 0, y: 0, w: 1000, h: 30 },
-        { x: 0, y: 680, w: 1000, h: 120 },
-    ],
-    "2_0": [ // g_castle
-        { x: 15, y: 0, w: 165, h: 700 },
-        { x: 820, y: 0, w: 165, h: 700 },
-        { x: 0, y: 700, w: 1000, h: 100 },
-    ],*/
+    const img = new Image();
+
+    img.onload = () => {
+        collisionCanvas.width = window.innerWidth;
+        collisionCanvas.height = window.innerHeight;
+
+        collisionCtx.clearRect(
+            0,
+            0,
+            collisionCanvas.width,
+            collisionCanvas.height
+        );
+
+        collisionCtx.drawImage(
+            img,
+            0,
+            0,
+            collisionCanvas.width,
+            collisionCanvas.height
+        );
+
+        collisionReady = true;
+
+        console.log("COLLISION GELADEN:", src);
+    };
+
+    img.onerror = () => {
+        console.error("COLLISION NICHT GEFUNDEN:", src);
+    };
+
+    img.src = src;
 }
 
-/*debugdebugdebug kikikiki aup aup aup*/
-function drawDebugBorders() {
-    document.querySelectorAll('.debug-border').forEach(el => el.remove())
-    if (!DEBUG_BORDERS) return
-
-    const key = `${currentX}_${currentY}`
-    const borders = zoneBorders[key] || []
-    const scaleX = window.innerWidth / 1000   // <- skaliert auf Fenstergröße
-    const scaleY = window.innerHeight / 800
-
-    borders.forEach(b => {
-        const div = document.createElement('div')
-        div.className = 'debug-border'
-        div.style.cssText = `
-            position: absolute;
-            left: ${b.x * scaleX}px;
-            top: ${b.y * scaleY}px;
-            width: ${b.w * scaleX}px;
-            height: ${b.h * scaleY}px;
-            background: rgba(255, 0, 0, 0.3);
-            border: 2px solid red;
-            z-index: 999;
-            pointer-events: none;
-        `
-        document.getElementById('game').appendChild(div)
-    })
-}
-
-function isColliding(x, y) {
-    const key = `${currentX}_${currentY}`
-    const borders = zoneBorders[key] || []
-    const scaleX = window.innerWidth / 1000
-    const scaleY = window.innerHeight / 800
-    const charW = 64
-    const charH = 64
-
-    return borders.some(b => {
-        const bx = b.x * scaleX
-        const by = b.y * scaleY
-        const bw = b.w * scaleX
-        const bh = b.h * scaleY
-        return x < bx + bw && x + charW > bx && y < by + bh && y + charH > by
-    })
-}
+/* set zone selber gemacht mit ki überarbeitet */
 function setZone(x, y) {
-    if (y < 0 || y >= worldMap.length) return
-    if (x < 0 || x >= worldMap[y].length) return
-    if (worldMap[y][x] === "N/A") return
-    currentX = x
-    currentY = y
-    document.getElementById("g-bg").style.backgroundImage = `url('${worldMap[y][x]}')`
-    if (gameSave) {
-        gameSave.zoneX = currentX
-        gameSave.zoneY = currentY
-        saveGame()
-    }
-    drawDebugBorders()
+    if (y < 0 || y >= worldMap.length) return;
+    if (x < 0 || x >= worldMap[y].length) return;
+    if (worldMap[y][x] === "N/A") return;
+
+    currentX = x;
+    currentY = y;
+
+    document.getElementById("g-bg").style.backgroundImage =
+        `url('${worldMap[y][x]}')`;
+
+    loadCollisionMap(
+        `./img/collision/${currentX}_${currentY}.jpg`
+    );
+
+    saveGame();
 }
+
+function isBlocked(x, y) {
+    if (!collisionReady) return false;
+
+    const pixel = collisionCtx.getImageData(
+        Math.floor(x),
+        Math.floor(y),
+        1,
+        1
+    ).data;
+
+    const brightness =
+        (pixel[0] + pixel[1] + pixel[2]) / 3;
+
+    return brightness > 150;
+}
+
 /* check edge ki */
+
 function checkEdge(px, py, mapWidth, mapHeight) {
+
+    if (teleportLock) return;
+
+    // RIGHT
     if (px >= mapWidth - 10) {
-        const nx = currentX + 1
-        const row = worldMap[currentY]
-        if (!row || nx >= row.length || row[nx] === "N/A") return null
-        setZone(nx, currentY)
-        return { x: 20, y: py }
+        const nx = currentX + 1;
+        if (!worldMap[currentY]?.[nx] || worldMap[currentY][nx] === "N/A") return;
+
+        teleportLock = true;
+        setTimeout(() => teleportLock = false, 300);
+
+        teleportToZone(nx, currentY);
+        return;
     }
+
+    // LEFT
     if (px <= 10) {
-        const nx = currentX - 1
-        const row = worldMap[currentY]
-        if (!row || nx < 0 || row[nx] === "N/A") return null
-        setZone(nx, currentY)
-        return { x: mapWidth - 20, y: py }
+        const nx = currentX - 1;
+        if (!worldMap[currentY]?.[nx] || worldMap[currentY][nx] === "N/A") return;
+
+        teleportLock = true;
+        setTimeout(() => teleportLock = false, 300);
+
+        teleportToZone(nx, currentY);
+        return;
     }
+
+    // TOP
     if (py <= 10) {
-        const ny = currentY - 1
-        const row = worldMap[ny]
-        if (ny < 0 || !row || currentX >= row.length || row[currentX] === "N/A") return null
-        setZone(currentX, ny)
-        return { x: px, y: mapHeight - 20 }
+        const ny = currentY - 1;
+        if (!worldMap[ny]?.[currentX] || worldMap[ny][currentX] === "N/A") return;
+
+        teleportLock = true;
+        setTimeout(() => teleportLock = false, 300);
+
+        teleportToZone(currentX, ny);
+        return;
     }
+
+    // BOTTOM
     if (py >= mapHeight - 10) {
-        const ny = currentY + 1
-        const row = worldMap[ny]
-        if (ny >= worldMap.length || !row || currentX >= row.length || row[currentX] === "N/A") return null
-        setZone(currentX, ny)
-        return { x: px, y: 20 }
+        const ny = currentY + 1;
+        if (!worldMap[ny]?.[currentX] || worldMap[ny][currentX] === "N/A") return;
+
+        teleportLock = true;
+        setTimeout(() => teleportLock = false, 300);
+
+        teleportToZone(currentX, ny);
+        return;
     }
-    return null
 }
+
 /* keyboard movement ist ki generiert */
 
 let playerX = window.innerWidth / 2
@@ -569,21 +613,24 @@ function gameLoop() {
     if (keys["ArrowLeft"] || keys["a"]) newX -= SPEED
     if (keys["ArrowUp"] || keys["w"]) newY -= SPEED
     if (keys["ArrowDown"] || keys["s"]) newY += SPEED
+    checkEdge(newX, newY, window.innerWidth, window.innerHeight);
+    function canMove(x, y) {
+        if (!collisionReady) return true;
 
-    const edge = checkEdge(newX, newY, window.innerWidth, window.innerHeight)
-    if (edge) {
-        playerX = edge.x
-        playerY = edge.y
-        moveChar()
-        requestAnimationFrame(gameLoop)
-        return
+        return !(
+            isBlocked(x + 8, y + 8) ||
+            isBlocked(x + 56, y + 8) ||
+            isBlocked(x + 8, y + 56) ||
+            isBlocked(x + 56, y + 56)
+        );
     }
 
-    if (!isColliding(newX, newY)) {
-        playerX = newX
-        playerY = newY
+    if (canMove(newX, newY)) {
+        playerX = newX;
+        playerY = newY;
     }
 
+    checkTeleportZones();
     moveChar()
     requestAnimationFrame(gameLoop)
 }
@@ -593,6 +640,46 @@ function moveChar() {
     if (!char) return
     char.style.left = playerX + "px"
     char.style.top = playerY + "px"
+}
+
+
+function checkTeleportZones() {
+    for (const zone of teleportZones) {
+
+        if (
+            zone.mapX === currentX &&
+            zone.mapY === currentY &&
+
+            playerX >= zone.x &&
+            playerX <= zone.x + zone.w &&
+
+            playerY >= zone.y &&
+            playerY <= zone.y + zone.h
+        ) {
+
+            setZone(
+                zone.targetX,
+                zone.targetY
+            );
+
+            playerX = zone.spawnX;
+            playerY = zone.spawnY;
+
+            moveChar();
+
+            return;
+        }
+    }
+}
+function teleportToZone(x, y) {
+    setZone(x, y);
+
+    const spawn = zoneSpawns[`${x}_${y}`];
+
+    playerX = spawn?.x ?? window.innerWidth / 2;
+    playerY = spawn?.y ?? window.innerHeight / 2;
+
+    moveChar();
 }
 
 gameLoop()
