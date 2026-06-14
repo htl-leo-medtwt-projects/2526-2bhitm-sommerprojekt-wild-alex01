@@ -6,8 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dark Adventures</title>
     <link rel="stylesheet" href="./style.css">
-    <script src="./script.js" defer></script>
     <script src="./items.js" defer></script>
+    <script src="./script.js" defer></script>
 </head>
 
 <body>
@@ -56,7 +56,7 @@
     </section>
 
     <section id="leaderboard">
-        <p id="Home" onclick="gotoMainMenu()"><- Home</ü>
+        <p id="Home" onclick="gotoMainMenu()">&lt;- Home</p>
                 <div class="lb-wrap">
                     <p id="leaderboardh1">Leaderboard</p>
                     <table class="lb-table">
@@ -77,13 +77,91 @@
     <section id="game">
         <div id="g-bg"></div>
         <div id="ui">
-            <p id="monAnz">Money: </p>
-            <p id="manAnz"></p>
+            <div class="hud-panel">
+                <div class="hud-stat money-stat">
+                    <span class="hud-icon">G</span>
+                    <div>
+                        <span class="hud-label">Gold</span>
+                        <strong id="monAnz">0</strong>
+                    </div>
+                </div>
+                <div class="hud-stat life-stat">
+                    <span class="hud-icon">HP</span>
+                    <div>
+                        <span class="hud-label">Leben</span>
+                        <strong id="manAnz">0</strong>
+                    </div>
+                </div>
+                <div class="hud-stat level-stat">
+                    <span class="hud-icon">LV</span>
+                    <div>
+                        <span class="hud-label">Level</span>
+                        <strong id="levelAnz">1</strong>
+                        <div class="xp-track">
+                            <div id="xpFill"></div>
+                        </div>
+                        <span id="xpAnz">0 / 100 XP</span>
+                    </div>
+                </div>
+            </div>
+            <div id="questTracker">
+                <span class="hud-label">Quest</span>
+                <strong id="questTitle">Keine aktive Quest</strong>
+                <p id="questObjective">Sprich mit jemandem, der deine Hilfe braucht.</p>
+            </div>
         </div>
+        <div id="npcAldric" class="world-npc">
+            <span>Aldric</span>
+        </div>
+        <div id="npcMerchant" class="world-npc merchant-npc">
+            <span>Haendler</span>
+        </div>
+        <div id="questPickup" class="quest-pickup">
+            <span>Schattenkraut</span>
+        </div>
+        <div id="interactionHint">E</div>
         <div class="pchar">
             <img id="playerChar" src="./img/game/player.png">
         </div>
         <div id="inventoryUI"></div>
+        <div id="starterChoice">
+            <div class="starter-panel">
+                <span class="hud-label">Waehle dein Startitem</span>
+                <strong>Was nimmst du mit?</strong>
+                <div class="starter-options">
+                    <button type="button" onclick="chooseStarterItem('starterSword')">
+                        <span>Rostiges Schwert</span>
+                        <small>Mehr Angriff</small>
+                    </button>
+                    <button type="button" onclick="chooseStarterItem('starterWand')">
+                        <span>Zauberstab</span>
+                        <small>Angriff und Mana</small>
+                    </button>
+                    <button type="button" onclick="chooseStarterItem('mysteryPotion')">
+                        <span>Geheimnisvoller Trank</span>
+                        <small>Einmalige Staerkung</small>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div id="shopPanel">
+            <div class="shop-window">
+                <div class="shop-head">
+                    <div>
+                        <span class="hud-label">Haendler</span>
+                        <strong>Markt der Schatten</strong>
+                    </div>
+                    <button type="button" onclick="closeShop()">X</button>
+                </div>
+                <div id="shopItems"></div>
+            </div>
+        </div>
+        <div id="dialogueBox">
+            <div class="dialogue-name" id="dialogueName">Aldric</div>
+            <p id="dialogueText"></p>
+            <button id="dialogueButton" type="button">Weiter</button>
+        </div>
+        <div id="questToast"></div>
     </section>
 </body>
 
