@@ -54,32 +54,65 @@ const teleportZones = [
         mapX: 2,
         mapY: 1,
 
-        xPct: 0.33,
-        yPct: 0.44,
-        wPct: 0.20,
-        hPct: 0.20,
+        xPct: 0.38,
+        yPct: 0.48,
+        wPct: 0.09,
+        hPct: 0.10,
 
         targetX: 2,
         targetY: 0,
 
         spawnXPct: 0.48,
-        spawnYPct: 0.72
+        spawnYPct: 0.70
     },
     {
         name: "waldhuette_inside_exit_front_door",
         mapX: 2,
         mapY: 0,
 
-        xPct: 0.12,
-        yPct: 0.68,
-        wPct: 0.22,
-        hPct: 0.24,
+        xPct: 0.08,
+        yPct: 0.77,
+        wPct: 0.16,
+        hPct: 0.18,
 
         targetX: 2,
         targetY: 1,
 
-        spawnXPct: 0.38,
-        spawnYPct: 0.52
+        spawnXPct: 0.39,
+        spawnYPct: 0.58
+    },
+    /* 50/50 mit KI: Trainingshallen-Tuer am guten Schloss, damit der Eingang nicht ueber den Kartenrand laufen muss. */
+    {
+        name: "g_castle_gate_to_traininghall",
+        mapX: 3,
+        mapY: 1,
+
+        xPct: 0.40,
+        yPct: 0.54,
+        wPct: 0.18,
+        hPct: 0.18,
+
+        targetX: 3,
+        targetY: 0,
+
+        spawnXPct: 0.48,
+        spawnYPct: 0.75
+    },
+    {
+        name: "traininghall_exit_to_g_castle_gate",
+        mapX: 3,
+        mapY: 0,
+
+        xPct: 0.40,
+        yPct: 0.78,
+        wPct: 0.20,
+        hPct: 0.16,
+
+        targetX: 3,
+        targetY: 1,
+
+        spawnXPct: 0.48,
+        spawnYPct: 0.75
     }
 ];
 
@@ -120,9 +153,17 @@ const questPickup = {
     id: "questPickup",
     mapX: 2,
     mapY: 1,
-    x: 1180,
-    y: 620,
-    range: 100
+    xPct: 0.74,
+    yPct: 0.62,
+    range: 150
+};
+const questPickup2 = {
+    id: "questPickup2",
+    mapX: 2,
+    mapY: 3,
+    xPct: 0.62,
+    yPct: 0.58,
+    range: 150
 };
 const merchantNpc = {
     id: "npcMerchant",
@@ -133,6 +174,24 @@ const merchantNpc = {
     y: 610,
     range: 130
 };
+const trainerNpc = {
+    id: "npcTrainer",
+    name: "Waffenmeister Rurik",
+    mapX: 3,
+    mapY: 0,
+    xPct: 0.34,
+    yPct: 0.55,
+    range: 135
+};
+const trainingDummy = {
+    id: "trainingDummy",
+    name: "Trainingspuppe",
+    mapX: 3,
+    mapY: 0,
+    xPct: 0.62,
+    yPct: 0.56,
+    range: 145
+};
 
 const merchantStock = [
     { itemId: "healPotionSmall", price: 25 },
@@ -140,6 +199,46 @@ const merchantStock = [
     { itemId: "manaPotion", price: 35 },
     { itemId: "bomb", price: 85 }
 ];
+
+/* 50/50 mit KI: Gegnerdaten bleiben getrennt von der Kampflogik, damit neue Trainingsgegner spaeter leicht eintragbar sind. */
+const trainingEnemies = {
+    dummy: {
+        name: "Trainingspuppe",
+        requiredLevel: 1,
+        infinite: true,
+        xpPerHit: 2,
+        bonusEvery: 5,
+        bonusXp: 8,
+        description: "Endloses Klick-Training. Kein Tod, kein Gegenschlag, kleine XP-Ticks."
+    },
+    guard: {
+        name: "Schlosswaechter",
+        requiredLevel: 5,
+        maxHp: 78,
+        attack: 6,
+        xp: 80,
+        money: 18,
+        description: "Ein ernstes Sparring mit echten Gegenschlaegen."
+    },
+    knight: {
+        name: "Schlossritter",
+        requiredLevel: 10,
+        maxHp: 135,
+        attack: 11,
+        xp: 155,
+        money: 34,
+        description: "Schneller, haerter und deutlich weniger geduldig."
+    },
+    champion: {
+        name: "Tor-Champion",
+        requiredLevel: 25,
+        maxHp: 320,
+        attack: 24,
+        xp: 430,
+        money: 95,
+        description: "Nur fuer spaete Runs. Der trifft wie ein fallendes Tor."
+    }
+};
 
 /* 50/50 mit KI: Erste Quest-Struktur mit States, Zieltexten und Belohnung. */
 const firstQuest = {
@@ -158,6 +257,24 @@ const firstQuest = {
     }
 };
 
+const secondQuest = {
+    id: "dorf2_relikt",
+    title: "Relikt aus Dorf2",
+    rewards: {
+        money: 55,
+        item: "bomb",
+        amount: 1,
+        xp: 125
+    },
+    objectives: {
+        locked: "Hilf zuerst Aldric in der Waldhuette.",
+        none: "Sprich mit dem Haendler im Dorf.",
+        started: "Suche das alte Relikt in Dorf2.",
+        relicFound: "Bring das Relikt zum Haendler zurueck.",
+        completed: "Abgeschlossen: Der Haendler hat dich belohnt."
+    }
+};
+
 let gameActive = false
 
 let currentX = 1   // Start bei castle_abzw
@@ -171,6 +288,7 @@ let activeDialogue = null;
 let dialogueIndex = 0;
 let toastTimer = null;
 let pendingSpawn = null;
+let combatState = null;
 
 const DEBUG_BORDERS = true
 const PLAYER_SIZE = 196
@@ -193,6 +311,8 @@ const STARTER_ITEMS = {
         message: "Der Trank wartet in deinem Inventar. Benutze ihn, wenn du bereit bist."
     }
 }
+const LEVEL_BASE_XP = 100
+const LEVEL_XP_GROWTH = 50
 
 //funcs
 //LS Funcs
@@ -226,6 +346,7 @@ function loadScore() {
     }
     let newSave = {
         level: 1,
+        xp: 0,
         money: 100,
         leben: 3,
         attack: 1,
@@ -253,6 +374,36 @@ function saveGame() {
 
 function getLoadingDuration(speed = 1) {
     return (100 / speed) * 100 + 600;
+}
+
+function getXpForNextLevel(level) {
+    return LEVEL_BASE_XP + Math.max(0, level - 1) * LEVEL_XP_GROWTH;
+}
+
+function addXp(amount, silent = false) {
+    if (!gameSave || amount <= 0) return;
+    ensureSaveShape();
+
+    gameSave.xp += amount;
+    const gainedLevels = [];
+
+    while (gameSave.xp >= getXpForNextLevel(gameSave.level)) {
+        gameSave.xp -= getXpForNextLevel(gameSave.level);
+        gameSave.level += 1;
+        gameSave.maxLeben += 2;
+        gameSave.leben = gameSave.maxLeben;
+        gameSave.attack += 2;
+        gameSave.money += 15;
+        gainedLevels.push(gameSave.level);
+    }
+
+    saveGame();
+    updateHUD();
+    if (gainedLevels.length > 0) {
+        showLevelUpScreen(gainedLevels[gainedLevels.length - 1], gainedLevels.length);
+    } else if (!silent) {
+        showToast(`+${amount} XP`);
+    }
 }
 
 function clampPlayerToScreen() {
@@ -354,6 +505,22 @@ function isWalkableOverride(x, y) {
             y: window.innerHeight * 0.04,
             w: window.innerWidth * 0.28,
             h: window.innerHeight * 0.20
+        },
+        {
+            mapX: 3,
+            mapY: 1,
+            x: window.innerWidth * 0.38,
+            y: window.innerHeight * 0.48,
+            w: window.innerWidth * 0.24,
+            h: window.innerHeight * 0.26
+        },
+        {
+            mapX: 3,
+            mapY: 0,
+            x: window.innerWidth * 0.26,
+            y: window.innerHeight * 0.48,
+            w: window.innerWidth * 0.50,
+            h: window.innerHeight * 0.42
         }
     ];
 
@@ -462,16 +629,25 @@ function prepareLoadedGame() {
 function ensureSaveShape() {
     if (!gameSave) return;
     gameSave.inventory ??= {};
+    gameSave.level = Number(gameSave.level ?? 1);
+    gameSave.xp = Number(gameSave.xp ?? 0);
     gameSave.money = Number(gameSave.money ?? 0);
     gameSave.leben = Number(gameSave.leben ?? 1);
     gameSave.maxLeben = Number(gameSave.maxLeben ?? gameSave.leben);
     gameSave.attack = Number(gameSave.attack ?? 1);
     gameSave.mana = Number(gameSave.mana ?? 0);
     gameSave.starterChosen = Boolean(gameSave.starterChosen);
+    gameSave.training ??= {};
+    gameSave.training.dummyWins = Number(gameSave.training.dummyWins ?? 0);
+    gameSave.training.guardWins = Number(gameSave.training.guardWins ?? 0);
+    gameSave.training.knightWins = Number(gameSave.training.knightWins ?? 0);
+    gameSave.training.championWins = Number(gameSave.training.championWins ?? 0);
+    gameSave.training.dummyHits = Number(gameSave.training.dummyHits ?? 0);
     gameSave.zoneX = Number.isInteger(Number(gameSave.zoneX)) ? Number(gameSave.zoneX) : currentX;
     gameSave.zoneY = Number.isInteger(Number(gameSave.zoneY)) ? Number(gameSave.zoneY) : currentY;
     gameSave.quests ??= {};
     gameSave.quests[firstQuest.id] ??= { state: "none" };
+    gameSave.quests[secondQuest.id] ??= { state: "none" };
 }
 
 function findItem(itemId) {
@@ -486,11 +662,47 @@ function getQuestState() {
     return gameSave.quests[firstQuest.id].state;
 }
 
+function getSecondQuestState() {
+    ensureSaveShape();
+    return gameSave.quests[secondQuest.id].state;
+}
+
 function setQuestState(state) {
     ensureSaveShape();
     gameSave.quests[firstQuest.id].state = state;
     saveGame();
     updateHUD();
+}
+
+function setSecondQuestState(state) {
+    ensureSaveShape();
+    gameSave.quests[secondQuest.id].state = state;
+    saveGame();
+    updateHUD();
+}
+
+function getDisplayedQuest() {
+    const firstState = getQuestState();
+    const secondState = getSecondQuestState();
+
+    if (firstState !== "completed") {
+        return {
+            title: firstState === "none" ? "Keine aktive Quest" : firstQuest.title,
+            objective: firstQuest.objectives[firstState]
+        };
+    }
+
+    if (secondState !== "completed") {
+        return {
+            title: secondState === "none" ? "Neue Quest verfuegbar" : secondQuest.title,
+            objective: secondQuest.objectives[secondState]
+        };
+    }
+
+    return {
+        title: "Alle Quests erledigt",
+        objective: "Erkunde die Welt und sammle mehr Erfahrung."
+    };
 }
 
 function showToast(text) {
@@ -502,6 +714,27 @@ function showToast(text) {
     toastTimer = setTimeout(() => toast.classList.remove("show"), 2600);
 }
 
+function showLevelUpScreen(level, gainedLevels = 1) {
+    const screen = document.getElementById("levelUpScreen");
+    if (!screen) return;
+
+    document.getElementById("levelUpTitle").textContent = `Level ${level}`;
+    document.getElementById("levelUpText").textContent =
+        gainedLevels > 1
+            ? `Du bist ${gainedLevels} Level aufgestiegen. +${gainedLevels * 2} Leben, +${gainedLevels * 2} Angriff, +${gainedLevels * 15} Gold.`
+            : "+2 Leben, +2 Angriff, +15 Gold. Deine Leben wurden aufgefuellt.";
+
+    screen.style.display = "flex";
+    gameActive = false;
+}
+
+function closeLevelUpScreen() {
+    const screen = document.getElementById("levelUpScreen");
+    if (!screen) return;
+    screen.style.display = "none";
+    resumeGameIfNoOverlay();
+}
+
 function updateHUD() {
     if (!gameSave) return;
     ensureSaveShape();
@@ -509,10 +742,15 @@ function updateHUD() {
     document.getElementById("monAnz").textContent = gameSave.money.toLocaleString("de-DE");
     document.getElementById("manAnz").textContent = `${gameSave.leben}/${gameSave.maxLeben}`;
 
-    const questState = getQuestState();
-    document.getElementById("questTitle").textContent =
-        questState === "none" ? "Keine aktive Quest" : firstQuest.title;
-    document.getElementById("questObjective").textContent = firstQuest.objectives[questState];
+    const xpNeeded = getXpForNextLevel(gameSave.level);
+    const xpPercent = Math.min(100, (gameSave.xp / xpNeeded) * 100);
+    document.getElementById("levelAnz").textContent = gameSave.level;
+    document.getElementById("xpAnz").textContent = `${gameSave.xp} / ${xpNeeded} XP`;
+    document.getElementById("xpFill").style.width = `${xpPercent}%`;
+
+    const displayedQuest = getDisplayedQuest();
+    document.getElementById("questTitle").textContent = displayedQuest.title;
+    document.getElementById("questObjective").textContent = displayedQuest.objective;
 }
 
 function toggleInventory() {
@@ -569,9 +807,7 @@ function closeShop() {
     const panel = document.getElementById("shopPanel");
     if (!panel) return;
     panel.style.display = "none";
-    if (document.getElementById("starterChoice")?.style.display !== "flex") {
-        gameActive = true;
-    }
+    resumeGameIfNoOverlay();
 }
 
 function buyItem(itemId, price) {
@@ -588,6 +824,264 @@ function buyItem(itemId, price) {
     updateHUD();
     showToast(`${findItem(itemId).name} gekauft.`);
     openShop();
+}
+
+function isUiOverlayOpen() {
+    return document.getElementById("starterChoice")?.style.display === "flex" ||
+        document.getElementById("shopPanel")?.style.display === "flex" ||
+        document.getElementById("levelUpScreen")?.style.display === "flex" ||
+        document.getElementById("combatPanel")?.style.display === "flex";
+}
+
+function resumeGameIfNoOverlay() {
+    if (!isUiOverlayOpen() && !activeDialogue && gameSave?.starterChosen) {
+        gameActive = true;
+    }
+}
+
+function getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function getScaledTrainingEnemy(enemyId) {
+    const enemy = trainingEnemies[enemyId];
+    if (!enemy) return null;
+
+    if (enemy.infinite) return { ...enemy };
+
+    const level = Number(gameSave?.level ?? 1);
+    const levelAboveRequirement = Math.max(0, level - enemy.requiredLevel);
+    return {
+        ...enemy,
+        maxHp: enemy.maxHp + levelAboveRequirement * 14,
+        attack: enemy.attack + Math.floor(levelAboveRequirement * 0.8),
+        xp: enemy.xp + levelAboveRequirement * 6,
+        money: enemy.money + Math.floor(levelAboveRequirement * 1.5)
+    };
+}
+
+function openTrainingMenu() {
+    const panel = document.getElementById("combatPanel");
+    const title = document.getElementById("combatTitle");
+    const content = document.getElementById("combatContent");
+    if (!panel || !title || !content || !gameSave) return;
+
+    ensureSaveShape();
+    combatState = null;
+    title.textContent = "Trainingshalle";
+    content.innerHTML = `
+        <div class="training-intro">
+            <strong>Waffenmeister Rurik</strong>
+            <p>Waehle ein Training. Du bekommst XP und etwas Gold, verlierst aber echte Leben bei Treffern.</p>
+        </div>
+        <div class="training-stats">
+            <span>Puppen-Treffer: ${gameSave.training.dummyHits}</span>
+            <span>Siege Waechter: ${gameSave.training.guardWins}</span>
+            <span>Siege Ritter: ${gameSave.training.knightWins}</span>
+            <span>Siege Champion: ${gameSave.training.championWins}</span>
+            <span>Bomben: ${gameSave.inventory.bomb || 0}</span>
+            <span>HP: ${gameSave.leben}/${gameSave.maxLeben}</span>
+        </div>
+        <div class="training-options">
+            ${Object.entries(trainingEnemies).map(([enemyId, enemy]) => {
+                const locked = gameSave.level < enemy.requiredLevel;
+                const scaledEnemy = getScaledTrainingEnemy(enemyId);
+                const rewardText = enemy.infinite
+                    ? `+${enemy.xpPerHit} XP pro Treffer / Bonus alle ${enemy.bonusEvery}`
+                    : `Lv. ${enemy.requiredLevel}+ | ${scaledEnemy.maxHp} HP | +${scaledEnemy.xp} XP`;
+
+                return `
+                <button type="button" class="${locked ? "locked" : ""}" onclick="startTrainingCombat('${enemyId}')" ${locked ? "disabled" : ""}>
+                    <strong>${enemy.name}</strong>
+                    <small>${enemy.description}</small>
+                    <span>${locked ? `Benoetigt Level ${enemy.requiredLevel}` : rewardText}</span>
+                </button>
+            `;
+            }).join("")}
+        </div>
+    `;
+
+    panel.style.display = "flex";
+    gameActive = false;
+}
+
+function closeCombatPanel() {
+    const panel = document.getElementById("combatPanel");
+    if (!panel) return;
+
+    if (combatState) {
+        showToast("Training abgebrochen.");
+    }
+
+    combatState = null;
+    panel.style.display = "none";
+    resumeGameIfNoOverlay();
+}
+
+function startTrainingCombat(enemyId) {
+    const enemy = getScaledTrainingEnemy(enemyId);
+    if (!enemy || !gameSave) return;
+    ensureSaveShape();
+
+    if (gameSave.level < enemy.requiredLevel) {
+        showToast(`${enemy.name} braucht Level ${enemy.requiredLevel}.`);
+        return;
+    }
+
+    combatState = {
+        enemyId,
+        enemyHp: enemy.infinite ? Infinity : enemy.maxHp,
+        dummySessionHits: 0,
+        log: `${enemy.name} stellt sich dir entgegen.`
+    };
+    renderCombatPanel();
+}
+
+function renderCombatPanel() {
+    const panel = document.getElementById("combatPanel");
+    const title = document.getElementById("combatTitle");
+    const content = document.getElementById("combatContent");
+    if (!panel || !title || !content || !combatState || !gameSave) return;
+
+    const enemy = getScaledTrainingEnemy(combatState.enemyId);
+    const enemyHpPercent = enemy.infinite ? 100 : Math.max(0, (combatState.enemyHp / enemy.maxHp) * 100);
+    const playerHpPercent = Math.max(0, (gameSave.leben / gameSave.maxLeben) * 100);
+    const bombCount = gameSave.inventory.bomb || 0;
+
+    title.textContent = enemy.name;
+    content.innerHTML = `
+        <div class="combat-bars">
+            <div>
+                <span>${enemy.name}</span>
+                <div class="combat-bar"><i style="width:${enemyHpPercent}%"></i></div>
+                <small>${enemy.infinite ? `Unendlich HP | Session-Treffer: ${combatState.dummySessionHits}` : `${Math.max(0, combatState.enemyHp)} / ${enemy.maxHp} HP`}</small>
+            </div>
+            <div>
+                <span>Du</span>
+                <div class="combat-bar player-hp"><i style="width:${playerHpPercent}%"></i></div>
+                <small>${gameSave.leben} / ${gameSave.maxLeben} HP | Mana ${gameSave.mana}</small>
+            </div>
+        </div>
+        <p class="combat-log">${combatState.log}</p>
+        <div class="combat-actions">
+            <button type="button" onclick="playerCombatAction('attack')">${enemy.infinite ? "Trainieren" : "Angriff"}</button>
+            <button type="button" onclick="playerCombatAction('focus')" ${gameSave.mana < 2 ? "disabled" : ""}>Fokus -2 Mana</button>
+            <button type="button" onclick="playerCombatAction('bomb')" ${bombCount <= 0 ? "disabled" : ""}>Bombe x${bombCount}</button>
+            <button type="button" onclick="closeCombatPanel()">Flucht</button>
+        </div>
+    `;
+
+    panel.style.display = "flex";
+    gameActive = false;
+}
+
+/* 50/50 mit KI: Kleiner rundenbasierter Kampf mit Player-Schlag, Gegner-Schlag, Sieg/Defeat und XP-Anbindung. */
+function playerCombatAction(action) {
+    if (!combatState || !gameSave) return;
+    const enemy = getScaledTrainingEnemy(combatState.enemyId);
+    const logs = [];
+
+    if (action === "bomb") {
+        if (!hasItem("bomb")) {
+            combatState.log = "Du hast keine Bombe im Inventar.";
+            renderCombatPanel();
+            return;
+        }
+        removeItem("bomb", 1);
+    }
+
+    if (action === "focus") {
+        if (gameSave.mana < 2) {
+            combatState.log = "Nicht genug Mana fuer Fokus.";
+            renderCombatPanel();
+            return;
+        }
+        gameSave.mana -= 2;
+    }
+
+    if (enemy.infinite) {
+        const hitValue = action === "bomb" ? 8 : action === "focus" ? 3 : 1;
+        const xpGain = action === "bomb" ? enemy.xpPerHit * 8 + enemy.bonusXp : action === "focus" ? enemy.xpPerHit * 3 : enemy.xpPerHit;
+        const hitsBefore = gameSave.training.dummyHits;
+        combatState.dummySessionHits += hitValue;
+        gameSave.training.dummyHits += hitValue;
+        addXp(xpGain, true);
+
+        const bonusesCrossed = Math.floor(gameSave.training.dummyHits / enemy.bonusEvery) - Math.floor(hitsBefore / enemy.bonusEvery);
+        if (bonusesCrossed > 0) {
+            gameSave.money += bonusesCrossed;
+            logs.push(`Bonus: +${bonusesCrossed} Gold.`);
+        }
+
+        logs.unshift(action === "bomb"
+            ? `Die Bombe zerlegt die Puppe in ${hitValue} Trainings-Treffer.`
+            : action === "focus"
+                ? `Fokus-Kombo: ${hitValue} saubere Treffer.`
+                : "Du landest einen Trainings-Treffer.");
+        combatState.log = `${logs.join(" ")} +${xpGain} XP.`;
+        saveGame();
+        updateHUD();
+        renderCombatPanel();
+        return;
+    }
+
+    const baseDamage = action === "bomb"
+        ? 42 + Math.ceil(gameSave.level * 3.5)
+        : action === "focus"
+            ? Math.ceil(gameSave.attack * 0.24) + getRandomInt(5, 10)
+            : Math.ceil(gameSave.attack * 0.16) + getRandomInt(2, 7);
+    const playerDamage = Math.max(action === "bomb" ? 45 : action === "focus" ? 8 : 4, baseDamage);
+    combatState.enemyHp -= playerDamage;
+    logs.push(action === "bomb"
+        ? `Die Bombe explodiert fuer ${playerDamage} Schaden.`
+        : action === "focus"
+            ? `Dein Fokusschlag trifft fuer ${playerDamage} Schaden.`
+            : `Du triffst fuer ${playerDamage} Schaden.`);
+
+    if (combatState.enemyHp <= 0) {
+        finishTrainingCombat(true, logs);
+        return;
+    }
+
+    const enemyDamage = Math.max(1, enemy.attack + getRandomInt(-1, 2));
+    gameSave.leben = Math.max(0, gameSave.leben - enemyDamage);
+    logs.push(`${enemy.name} kontert fuer ${enemyDamage} Schaden.`);
+
+    if (gameSave.leben <= 0) {
+        finishTrainingCombat(false, logs);
+        return;
+    }
+
+    combatState.log = logs.join(" ");
+    saveGame();
+    updateHUD();
+    renderCombatPanel();
+}
+
+function finishTrainingCombat(won, logs) {
+    const enemy = getScaledTrainingEnemy(combatState.enemyId);
+    const enemyId = combatState.enemyId;
+
+    if (won) {
+        gameSave.money += enemy.money;
+        gameSave.training[`${enemyId}Wins`] = Number(gameSave.training[`${enemyId}Wins`] ?? 0) + 1;
+        combatState = null;
+        document.getElementById("combatPanel").style.display = "none";
+        addXp(enemy.xp);
+        saveGame();
+        updateHUD();
+        showToast(`${enemy.name} besiegt: +${enemy.xp} XP, +${enemy.money} Gold`);
+        resumeGameIfNoOverlay();
+        return;
+    }
+
+    gameSave.leben = 1;
+    combatState = null;
+    document.getElementById("combatPanel").style.display = "none";
+    saveGame();
+    updateHUD();
+    showToast(`${logs.join(" ")} Du gehst zu Boden. Rurik rettet dich mit 1 HP.`);
+    resumeGameIfNoOverlay();
 }
 
 function chooseStarterItem(itemId) {
@@ -951,7 +1445,8 @@ function confirmChar() {
         playerX: window.innerWidth / 2,
         playerY: window.innerHeight / 2,
         quests: {
-            [firstQuest.id]: { state: "none" }
+            [firstQuest.id]: { state: "none" },
+            [secondQuest.id]: { state: "none" }
         }
     }
     currSlot = getNextSlot()
@@ -1157,6 +1652,8 @@ document.addEventListener("keydown", (e) => {
         toggleInventory();
     }
     if (key === "escape" && !e.repeat) {
+        closeCombatPanel();
+        closeLevelUpScreen();
         closeShop();
     }
 });
@@ -1214,42 +1711,68 @@ function isInCurrentZone(object) {
 }
 
 function distanceTo(object) {
-    return Math.hypot(playerX - object.x, playerY - object.y);
+    const point = resolvePoint(object);
+    return Math.hypot(playerX - point.x, playerY - point.y);
 }
 
 function positionWorldElement(element, object, visible) {
     if (!element) return;
     element.style.display = visible ? "flex" : "none";
     if (!visible) return;
-    element.style.left = `${object.x}px`;
-    element.style.top = `${object.y}px`;
+    const point = resolvePoint(object);
+    element.style.left = `${point.x}px`;
+    element.style.top = `${point.y}px`;
 }
 
 /* 50/50 mit KI: NPC, Quest-Item und E-Hinweis werden pro Zone dynamisch ein-/ausgeblendet. */
 function renderWorldObjects() {
     const npcEl = document.getElementById(questNpc.id);
     const merchantEl = document.getElementById(merchantNpc.id);
+    const trainerEl = document.getElementById(trainerNpc.id);
+    const dummyEl = document.getElementById(trainingDummy.id);
     const pickupEl = document.getElementById(questPickup.id);
+    const pickup2El = document.getElementById(questPickup2.id);
     const hint = document.getElementById("interactionHint");
     const questState = getQuestState();
+    const secondQuestState = getSecondQuestState();
 
     const showNpc = isInCurrentZone(questNpc);
     const showMerchant = isInCurrentZone(merchantNpc);
+    const showTrainer = isInCurrentZone(trainerNpc);
+    const showDummy = isInCurrentZone(trainingDummy);
     const showPickup = isInCurrentZone(questPickup) && questState === "started";
+    const showPickup2 = isInCurrentZone(questPickup2) && secondQuestState === "started";
 
     positionWorldElement(npcEl, questNpc, showNpc);
     positionWorldElement(merchantEl, merchantNpc, showMerchant);
+    positionWorldElement(trainerEl, trainerNpc, showTrainer);
+    positionWorldElement(dummyEl, trainingDummy, showDummy);
     positionWorldElement(pickupEl, questPickup, showPickup);
+    positionWorldElement(pickup2El, questPickup2, showPickup2);
 
     const nearNpc = showNpc && distanceTo(questNpc) <= questNpc.range;
     const nearMerchant = showMerchant && distanceTo(merchantNpc) <= merchantNpc.range;
+    const nearTrainer = showTrainer && distanceTo(trainerNpc) <= trainerNpc.range;
+    const nearDummy = showDummy && distanceTo(trainingDummy) <= trainingDummy.range;
     const nearPickup = showPickup && distanceTo(questPickup) <= questPickup.range;
+    const nearPickup2 = showPickup2 && distanceTo(questPickup2) <= questPickup2.range;
 
-    if (hint && (nearNpc || nearMerchant || nearPickup) && !activeDialogue) {
-        const target = nearNpc ? questNpc : nearMerchant ? merchantNpc : questPickup;
+    if (hint && (nearNpc || nearMerchant || nearTrainer || nearDummy || nearPickup || nearPickup2) && !activeDialogue) {
+        const target = nearNpc
+            ? questNpc
+            : nearMerchant
+                ? merchantNpc
+                : nearTrainer
+                    ? trainerNpc
+                    : nearDummy
+                        ? trainingDummy
+                        : nearPickup
+                            ? questPickup
+                            : questPickup2;
+        const targetPoint = resolvePoint(target);
         hint.style.display = "block";
-        hint.style.left = `${target.x + 38}px`;
-        hint.style.top = `${target.y - 46}px`;
+        hint.style.left = `${targetPoint.x + 38}px`;
+        hint.style.top = `${targetPoint.y - 46}px`;
     } else if (hint) {
         hint.style.display = "none";
     }
@@ -1264,13 +1787,24 @@ function handleInteraction() {
     }
 
     const questState = getQuestState();
+    const secondQuestState = getSecondQuestState();
     if (isInCurrentZone(questNpc) && distanceTo(questNpc) <= questNpc.range) {
         talkToAldric(questState);
         return;
     }
 
     if (isInCurrentZone(merchantNpc) && distanceTo(merchantNpc) <= merchantNpc.range) {
-        openShop();
+        talkToMerchant(secondQuestState);
+        return;
+    }
+
+    if (isInCurrentZone(trainerNpc) && distanceTo(trainerNpc) <= trainerNpc.range) {
+        openTrainingMenu();
+        return;
+    }
+
+    if (isInCurrentZone(trainingDummy) && distanceTo(trainingDummy) <= trainingDummy.range) {
+        startTrainingCombat("dummy");
         return;
     }
 
@@ -1278,6 +1812,13 @@ function handleInteraction() {
         addItem("shadowHerb", 1);
         setQuestState("herbFound");
         showToast("Schattenkraut gefunden");
+        renderWorldObjects();
+    }
+
+    if (secondQuestState === "started" && isInCurrentZone(questPickup2) && distanceTo(questPickup2) <= questPickup2.range) {
+        addItem("oldRelic", 1);
+        setSecondQuestState("relicFound");
+        showToast("Altes Relikt gefunden");
         renderWorldObjects();
     }
 }
@@ -1311,9 +1852,10 @@ function talkToAldric(questState) {
             gameSave.money += firstQuest.rewards.money;
             addItem(firstQuest.rewards.item, firstQuest.rewards.amount);
             setQuestState("completed");
+            addXp(85);
             saveGame();
             updateHUD();
-            showToast("Quest abgeschlossen: +35 Gold, +1 Heiltrank");
+            showToast("Quest abgeschlossen: +35 Gold, +1 Heiltrank, +85 XP");
         });
         return;
     }
@@ -1321,6 +1863,54 @@ function talkToAldric(questState) {
     startDialogue(questNpc.name, [
         "Die Schatten bleiben nicht fort, aber heute hast du uns Zeit gekauft."
     ]);
+}
+
+function talkToMerchant(secondQuestState) {
+    const firstQuestDone = getQuestState() === "completed";
+
+    if (!firstQuestDone) {
+        startDialogue(merchantNpc.name, [
+            "Erst muss Aldrics Huette ruhig sein. Danach reden wir ueber echte Ware."
+        ], openShop);
+        return;
+    }
+
+    if (secondQuestState === "none") {
+        startDialogue(merchantNpc.name, [
+            "Du siehst aus, als koenntest du mehr als Kraeuter tragen.",
+            "In Dorf2 liegt ein altes Relikt zwischen den verlassenen Wegen. Bring es mir, und ich zahle gut."
+        ], () => {
+            setSecondQuestState("started");
+            showToast("Quest gestartet: Relikt aus Dorf2");
+        });
+        return;
+    }
+
+    if (secondQuestState === "started") {
+        startDialogue(merchantNpc.name, [
+            "Dorf2 liegt rechts vom Dorf. Das Relikt sollte dort noch leuchten."
+        ]);
+        return;
+    }
+
+    if (secondQuestState === "relicFound") {
+        startDialogue(merchantNpc.name, [
+            "Das ist es. Alt, kalt und wahrscheinlich verflucht. Perfekt.",
+            `Hier: ${secondQuest.rewards.money} Gold, eine Bombe und Erfahrung fuer deine Muehe.`
+        ], () => {
+            removeItem("oldRelic", 1);
+            gameSave.money += secondQuest.rewards.money;
+            addItem(secondQuest.rewards.item, secondQuest.rewards.amount);
+            setSecondQuestState("completed");
+            addXp(secondQuest.rewards.xp);
+            saveGame();
+            updateHUD();
+            showToast(`Quest abgeschlossen: +${secondQuest.rewards.money} Gold, +1 Bombe, +${secondQuest.rewards.xp} XP`);
+        });
+        return;
+    }
+
+    openShop();
 }
 
 function startDialogue(name, lines, onDone = null) {
