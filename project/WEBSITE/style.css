@@ -3,7 +3,7 @@
 body {
   padding: 0;
   margin: 0;
-  background-image: url('./img/startMenu.png');
+  background-image: url('./img/main_pic.png');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -34,15 +34,15 @@ body {
 h1 {
   font-size: 8rem;
   text-align: center;
-  margin-top: 16rem;
+  margin-top: 38rem;
   color: #eaeffd;
   letter-spacing: 3px;
 
   text-shadow:
-    0 0 5px #6f86de,
-    0 0 10px #6f86de,
-    0 0 20px #54649c,
-    0 0 40px #6176bf;
+    0 0 5px #de6f6f,
+    0 0 10px #de6f6f,
+    0 0 20px #9c5454,
+    0 0 40px #bf6161;
   cursor: pointer;
   animation: glowPulse 3s ease-in-out infinite;
 }
@@ -852,6 +852,10 @@ a {
   border-radius: 8px;
 }
 
+.level-stat {
+  min-width: 190px;
+}
+
 .hud-icon {
   width: 34px;
   height: 34px;
@@ -871,6 +875,11 @@ a {
   background: #7e1f31;
 }
 
+.level-stat .hud-icon {
+  color: #120c07;
+  background: #8fb6d8;
+}
+
 .hud-label {
   display: block;
   font-family: Georgia, serif;
@@ -887,6 +896,32 @@ a {
   font-size: 1.25rem;
   color: #f4e6bf;
   text-shadow: 0 0 10px rgba(203, 179, 112, 0.45);
+}
+
+.xp-track {
+  width: 130px;
+  height: 6px;
+  margin-top: 5px;
+  border-radius: 99px;
+  overflow: hidden;
+  background: rgba(244, 230, 191, 0.14);
+  border: 1px solid rgba(143, 182, 216, 0.24);
+}
+
+#xpFill {
+  width: 0%;
+  height: 100%;
+  background: linear-gradient(90deg, #6f86de, #cbb370);
+  box-shadow: 0 0 12px rgba(143, 182, 216, 0.42);
+  transition: width 0.25s ease;
+}
+
+#xpAnz {
+  display: block;
+  margin-top: 3px;
+  color: #a99772;
+  font-family: Georgia, serif;
+  font-size: 0.72rem;
 }
 
 #questTracker {
@@ -989,6 +1024,52 @@ a {
   backdrop-filter: blur(5px);
 }
 
+#levelUpScreen {
+  position: absolute;
+  inset: 0;
+  z-index: 41000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at center, rgba(111, 134, 222, 0.16), rgba(0, 0, 0, 0.86));
+  backdrop-filter: blur(6px);
+}
+
+.levelup-window {
+  width: min(520px, calc(100vw - 36px));
+  border: 1px solid rgba(143, 182, 216, 0.72);
+  border-radius: 8px;
+  padding: 24px;
+  text-align: center;
+  background:
+    linear-gradient(180deg, rgba(24, 28, 41, 0.97), rgba(8, 8, 13, 0.95)),
+    radial-gradient(circle at top, rgba(203, 179, 112, 0.18), transparent 60%);
+  box-shadow: 0 0 42px rgba(111, 134, 222, 0.32), inset 0 0 22px rgba(203, 179, 112, 0.08);
+  font-family: Georgia, serif;
+}
+
+.levelup-window strong {
+  display: block;
+  margin-top: 6px;
+  color: #f4e6bf;
+  font-size: 2.4rem;
+}
+
+.levelup-window p {
+  color: #d7cab0;
+  line-height: 1.45;
+}
+
+.levelup-window button {
+  border: 1px solid rgba(203, 179, 112, 0.62);
+  border-radius: 6px;
+  background: #21181f;
+  color: #f4e6bf;
+  font-family: Georgia, serif;
+  cursor: pointer;
+  padding: 9px 16px;
+}
+
 .starter-panel {
   width: min(720px, calc(100vw - 36px));
   border: 1px solid rgba(203, 179, 112, 0.65);
@@ -1045,7 +1126,8 @@ a {
 }
 
 .world-npc,
-.quest-pickup {
+.quest-pickup,
+.training-dummy {
   position: absolute;
   z-index: 9000;
   width: 72px;
@@ -1062,8 +1144,13 @@ a {
   box-shadow: 0 0 24px rgba(203, 179, 112, 0.35);
 }
 
+.relic-pickup {
+  background: radial-gradient(circle, #d8c58f 0 18%, #6f86de 42%, #161326 100%);
+}
+
 .world-npc span,
-.quest-pickup span {
+.quest-pickup span,
+.training-dummy span {
   position: absolute;
   bottom: -28px;
   min-width: max-content;
@@ -1090,6 +1177,26 @@ a {
     radial-gradient(circle at 50% 22%, #d6c08a 0 9px, transparent 10px),
     linear-gradient(180deg, #3a2b18 18%, #14100b 80%);
   box-shadow: 0 0 24px rgba(203, 148, 72, 0.36);
+}
+
+.trainer-npc {
+  background:
+    radial-gradient(circle at 50% 22%, #dbc58d 0 9px, transparent 10px),
+    linear-gradient(180deg, #263233 18%, #0c1113 80%);
+  border-color: rgba(143, 182, 216, 0.74);
+  box-shadow: 0 0 24px rgba(143, 182, 216, 0.34);
+}
+
+.training-dummy {
+  width: 62px;
+  height: 86px;
+  border-radius: 12px 12px 6px 6px;
+  background:
+    radial-gradient(circle at 50% 18%, #92734f 0 12px, transparent 13px),
+    linear-gradient(90deg, transparent 0 24px, rgba(203, 179, 112, 0.75) 25px 36px, transparent 37px),
+    linear-gradient(180deg, #4d3425 18%, #1a1110 88%);
+  border-color: rgba(203, 148, 72, 0.68);
+  box-shadow: 0 0 22px rgba(203, 148, 72, 0.28);
 }
 
 #shopPanel {
@@ -1180,6 +1287,176 @@ a {
 .shop-head button:hover {
   border-color: #cbb370;
   box-shadow: 0 0 14px rgba(203, 179, 112, 0.25);
+}
+
+#combatPanel {
+  position: absolute;
+  inset: 0;
+  z-index: 39500;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at center, rgba(32, 38, 44, 0.18), rgba(0, 0, 0, 0.84));
+  backdrop-filter: blur(5px);
+}
+
+.combat-window {
+  width: min(700px, calc(100vw - 36px));
+  border: 1px solid rgba(143, 182, 216, 0.66);
+  border-radius: 8px;
+  padding: 18px;
+  background:
+    linear-gradient(180deg, rgba(22, 28, 31, 0.97), rgba(8, 8, 12, 0.95)),
+    radial-gradient(circle at top right, rgba(203, 179, 112, 0.14), transparent 58%);
+  box-shadow: 0 0 38px rgba(0, 0, 0, 0.86), inset 0 0 22px rgba(143, 182, 216, 0.08);
+  color: #f1e8d4;
+  font-family: Georgia, serif;
+}
+
+.combat-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.combat-head strong {
+  display: block;
+  margin-top: 4px;
+  color: #f4e6bf;
+  font-size: 1.6rem;
+}
+
+.combat-head button,
+.combat-actions button,
+.training-options button {
+  border: 1px solid rgba(203, 179, 112, 0.55);
+  border-radius: 6px;
+  background: #1b1f23;
+  color: #f4e6bf;
+  font-family: Georgia, serif;
+  cursor: pointer;
+}
+
+.combat-head button {
+  width: 34px;
+  height: 34px;
+}
+
+.training-intro p,
+.combat-log {
+  color: #d7cab0;
+  line-height: 1.45;
+}
+
+.training-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 12px 0 14px;
+}
+
+.training-stats span {
+  padding: 6px 9px;
+  border: 1px solid rgba(143, 182, 216, 0.28);
+  border-radius: 6px;
+  background: rgba(8, 7, 10, 0.52);
+  color: #d7cab0;
+  font-size: 0.86rem;
+}
+
+.training-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.training-options button {
+  min-height: 116px;
+  padding: 13px;
+  text-align: left;
+}
+
+.training-options button.locked {
+  cursor: not-allowed;
+  opacity: 0.48;
+  border-color: rgba(143, 182, 216, 0.24);
+}
+
+.training-options strong,
+.training-options small,
+.training-options span {
+  display: block;
+}
+
+.training-options small {
+  margin: 8px 0;
+  color: #a99772;
+  line-height: 1.35;
+}
+
+.training-options span {
+  color: #8fb6d8;
+  font-size: 0.86rem;
+}
+
+.combat-bars {
+  display: grid;
+  gap: 14px;
+}
+
+.combat-bars span {
+  display: block;
+  margin-bottom: 5px;
+  color: #f4e6bf;
+}
+
+.combat-bars small {
+  display: block;
+  margin-top: 5px;
+  color: #a99772;
+}
+
+.combat-bar {
+  height: 12px;
+  overflow: hidden;
+  border-radius: 999px;
+  border: 1px solid rgba(203, 179, 112, 0.34);
+  background: rgba(8, 7, 10, 0.75);
+}
+
+.combat-bar i {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, #8c2f39, #d07958);
+  transition: width 0.2s ease;
+}
+
+.combat-bar.player-hp i {
+  background: linear-gradient(90deg, #476c53, #8fbf7a);
+}
+
+.combat-actions {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.combat-actions button {
+  min-height: 42px;
+}
+
+.combat-actions button:hover,
+.training-options button:hover,
+.combat-head button:hover {
+  border-color: #cbb370;
+  box-shadow: 0 0 16px rgba(203, 179, 112, 0.24);
+}
+
+.combat-actions button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
 }
 
 @keyframes pulsePickup {
@@ -1295,6 +1572,11 @@ a {
   }
 
   .starter-options {
+    grid-template-columns: 1fr;
+  }
+
+  .training-options,
+  .combat-actions {
     grid-template-columns: 1fr;
   }
 }
