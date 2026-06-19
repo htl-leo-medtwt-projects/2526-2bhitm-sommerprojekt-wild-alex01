@@ -28,7 +28,7 @@
             </div>
         </div>
     </div>
-    <h1 id="headerText" onclick="gotoMainMenu()">Dark Adventures</h1>
+    <h1 id="headerText" onclick="gotoMainMenu()">Start</h1>
 
     <section id="MainMenu" style="display: none;">
         <p onclick="loadGame()">Load Game</p>
@@ -116,8 +116,17 @@
         <div id="npcMerchant" class="world-npc merchant-npc">
             <span>Haendler</span>
         </div>
+        <div id="npcTrainer" class="world-npc trainer-npc">
+            <span>Trainer</span>
+        </div>
+        <div id="trainingDummy" class="training-dummy">
+            <span>Puppe</span>
+        </div>
         <div id="questPickup" class="quest-pickup">
             <span>Schattenkraut</span>
+        </div>
+        <div id="questPickup2" class="quest-pickup relic-pickup">
+            <span>Relikt</span>
         </div>
         <div id="interactionHint">E</div>
         <div class="pchar">
@@ -154,6 +163,26 @@
                     <button type="button" onclick="closeShop()">X</button>
                 </div>
                 <div id="shopItems"></div>
+            </div>
+        </div>
+        <div id="levelUpScreen">
+            <div class="levelup-window">
+                <span class="hud-label">Level Up</span>
+                <strong id="levelUpTitle">Level 2</strong>
+                <p id="levelUpText">Staerker. Zaehiger. Reicher.</p>
+                <button type="button" onclick="closeLevelUpScreen()">Weiter</button>
+            </div>
+        </div>
+        <div id="combatPanel">
+            <div class="combat-window">
+                <div class="combat-head">
+                    <div>
+                        <span class="hud-label">Training</span>
+                        <strong id="combatTitle">Trainingshalle</strong>
+                    </div>
+                    <button type="button" onclick="closeCombatPanel()">X</button>
+                </div>
+                <div id="combatContent"></div>
             </div>
         </div>
         <div id="dialogueBox">
